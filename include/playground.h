@@ -26,6 +26,7 @@ class playground { // 遊戲介面 class
     int enemyNUM = 0;
     public:
     SDL_Texture *background = nullptr;
+    SDL_Texture *backgroundMove = nullptr;
     SDL_Renderer *renderer = nullptr;
     int update(float deltatime);
     int process_input(SDL_Event *event, const Uint8* keystate);
@@ -35,7 +36,7 @@ class playground { // 遊戲介面 class
     void new_Enemy();
     void bullet_update(float deltatime);
     void enemy_update(float deltatime);
-    playground(std::string path, SDL_Renderer* renderer);
+    playground(std::string path,std::string pathMove, SDL_Renderer* renderer);
     ~playground();
 };
 

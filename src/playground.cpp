@@ -7,13 +7,14 @@
 #include "../SDL_lib/SDL_bgi.h"
 
 
-playground::playground(std::string path, SDL_Renderer *renderer) {
+playground::playground(std::string path, std::string pathMove, SDL_Renderer *renderer) {
     SDL_Log("Creating playground...");
     this -> background = loadTexture(path, renderer);
+    this -> backgroundMove = loadTexture(pathMove, renderer);
     this -> renderer = renderer;
-    this->backgroundX = 0;
+    this -> backgroundX = 0;
     srand( time(NULL) );
-    player = new Player(PLAYER_W, 40, PLAYER_W, PLAYER_H, PLAYER_SPEED, renderer);
+    player = new Player(PLAYER_W+30, WINDOW_HEIGHT-WINDOW_M_HEIGHT, PLAYER_W, PLAYER_H, PLAYER_SPEED, renderer, WINDOW_HEIGHT,WINDOW_HEIGHT-WINDOW_M_HEIGHT);
 }
 
 int playground::process_input(SDL_Event *event, const Uint8 *keystate) {
@@ -128,16 +129,17 @@ void playground::movebd(float dt) {
 }
 
 void playground::bdrender() {
-    SDL_Rect renderQuad = { (int)backgroundX, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
-    SDL_RenderCopy(renderer, this->background, nullptr, &renderQuad);
-    SDL_Rect renderQuad2 = { (int)backgroundX+WINDOW_WIDTH, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
-    SDL_RenderCopy(renderer, this->background, nullptr, &renderQuad2);
+    SDL_RenderCopy(renderer, this->background, nullptr, nullptr);
+    SDL_Rect renderQuad = { (int)backgroundX, WINDOW_HEIGHT-WINDOW_M_HEIGHT, WINDOW_WIDTH, WINDOW_M_HEIGHT };
+    SDL_RenderCopy(renderer, this->backgroundMove, nullptr, &renderQuad);
+    SDL_Rect renderQuad2 = { (int)backgroundX+WINDOW_WIDTH, WINDOW_HEIGHT-WINDOW_M_HEIGHT, WINDOW_WIDTH, WINDOW_M_HEIGHT };
+    SDL_RenderCopy(renderer, this->backgroundMove, nullptr, &renderQuad2);
 }
 
 void playground::new_Enemy() {
     int n = ENEMYNUMMAX-enemyNUM;
     for (int i = 0; i < n; i++) {
-        enemys.push_back(new Enemy(rand()%WINDOW_WIDTH+WINDOW_WIDTH, rand()%WINDOW_HEIGHT, rand()%200, rand()%10));
+        enemys.push_back(new Enemy(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100), rand()%200, rand()%10));
         // SDL_Log("Enemy born at %f, %f", enemys[i]->x, enemys[i]->y);
         enemyNUM++;
     }

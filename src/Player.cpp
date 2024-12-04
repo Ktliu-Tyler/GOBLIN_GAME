@@ -1,12 +1,14 @@
 #include "../include/player.h"
 
 
-Player::Player(float posx, float posy, float w, float h, float sp, SDL_Renderer* renderer) {
+Player::Player(float posx, float posy, float w, float h, float sp, SDL_Renderer* renderer, float yM,float ym) {
     x = posx;
     y = posy;
     width = w;
     height = h;
     speed = sp;
+    yMax = yM;
+    yMin = ym;
     animW = new Animation('w', 100, this->Wimages, renderer);
     animS = new Animation('s', 50, this->Simages, renderer);
     rect = new SDL_Rect {
@@ -54,6 +56,11 @@ void Player::kinetic(float dt) {
         y -= speed * vy/abs(vy)*dt;
     }else if(direction=='d') {
         y += speed * vy/abs(vy)*dt;
+    }
+    if (y >= yMax-height) {
+        y = yMax-height;
+    } else if (y <= yMin-height) {
+        y = yMin-height;
     }
 }
 

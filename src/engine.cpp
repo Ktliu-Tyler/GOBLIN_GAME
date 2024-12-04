@@ -10,6 +10,8 @@ SDL_Texture *background = nullptr;
 
 menu *MenuPage = nullptr;
 playground *PlayPage = nullptr;
+std::vector<std::string> playbg = PLAYGROUND_BACKGROUND;
+std::vector<std::string> playbgMove = PLAYGROUND_BACKGROUND_MOVE;
 const Uint8* keystate = (SDL_GetKeyboardState(NULL));
 int PAGE_ID = 0;
 
@@ -58,7 +60,7 @@ int initialize_window() {
 
 void setup() {
     MenuPage = new menu(MENU_BACKGROUND, renderer);
-    PlayPage = new playground(PLAYGROUND_BACKGROUND, renderer);
+    PlayPage = new playground(playbg[1], playbgMove[1], renderer);
     // background = loadTexture("../imgs/background2.jpg", renderer);
 }
 

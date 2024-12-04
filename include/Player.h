@@ -12,7 +12,7 @@
 class Player {
 // 玩家 class
 public:
-    Player(float x, float y, float width ,float height, float speed, SDL_Renderer* renderer);
+    Player(float x, float y, float width ,float height, float speed, SDL_Renderer* renderer,float yMax=WINDOW_HEIGHT,float yMin=0);
     SDL_Rect *rect;
     void init(float x, float y);
     void render(SDL_Renderer* renderer);
@@ -28,9 +28,11 @@ public:
     float speed;
     float width;
     float height;
+    float yMax;
+    float yMin;
     char direction = 's';
     char state = 'W';
-    char type = 'P';
+    char type = 'N';
 };
 
 

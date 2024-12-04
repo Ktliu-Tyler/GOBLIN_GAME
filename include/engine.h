@@ -13,6 +13,7 @@
 
 extern SDL_Window *mywindow; // 視窗指標
 extern SDL_Renderer *renderer; // 選染器
+
 // extern Ball *ball;
 // extern Player *player1;
 // extern Player *player2;
