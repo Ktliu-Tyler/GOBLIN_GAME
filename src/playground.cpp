@@ -13,7 +13,7 @@ playground::playground(std::string path, SDL_Renderer *renderer) {
     this -> renderer = renderer;
     this->backgroundX = 0;
     srand( time(NULL) );
-    player = new Player(PLAYER_W, 40, 20, 150, PLAYER_SPEED);
+    player = new Player(PLAYER_W, 40, PLAYER_W, PLAYER_H, PLAYER_SPEED, renderer);
 }
 
 int playground::process_input(SDL_Event *event, const Uint8 *keystate) {
@@ -38,9 +38,23 @@ int playground::process_input(SDL_Event *event, const Uint8 *keystate) {
                 SDL_Log("SDL_q");
                 return MENUID;
             }
-            if(event->key.keysym.sym == SDLK_SPACE) {
+            if (event->key.keysym.sym == SDLK_1) {
+                player->changeArrow('N');
+            }
+            if (event->key.keysym.sym == SDLK_2) {
+                player->changeArrow('F');
+            }
+            if (event->key.keysym.sym == SDLK_3) {
+                player->changeArrow('p');
+            }
+            if (event->key.keysym.sym == SDLK_4) {
+                player->changeArrow('P');
+            }
+            if(event->key.keysym.sym == SDLK_SPACE && player->animS->finish) {
                 SDL_Log("SDL_space");
-                bullets.push_back(new Bullet(player->x, player->y+player->height/2));
+                player->state = 'S';
+                player->animS->init();
+                bullets.push_back(new Bullet(player->x+player->width/2, player->y+player->height/2, player->type, renderer));
             }
         break;
     }
@@ -76,7 +90,7 @@ void playground::enemy_update(float deltatime) {
         enemy->kinetic(deltatime);
         for (auto bullet: bullets) {
             if(SDL_HasIntersection(bullet->rect, enemy->rect)) {
-                enemy->hurted(1);
+                enemy->hurted(bullet->att);
                 bullet->destroyed = true;
             }
         }

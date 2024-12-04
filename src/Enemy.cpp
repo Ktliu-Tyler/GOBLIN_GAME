@@ -60,7 +60,7 @@ void Enemy::render(SDL_Renderer *renderer) {
 }
 
 void Enemy::destroy() {
-    SDL_Log("Enemy::destroy");
+    // SDL_Log("Enemy::destroy");
 }
 
 

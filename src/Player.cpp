@@ -1,12 +1,14 @@
 #include "../include/player.h"
 
 
-Player::Player(float posx, float posy, float w, float h, float sp) {
+Player::Player(float posx, float posy, float w, float h, float sp, SDL_Renderer* renderer) {
     x = posx;
     y = posy;
     width = w;
     height = h;
     speed = sp;
+    animW = new Animation('w', 100, this->Wimages, renderer);
+    animS = new Animation('s', 50, this->Simages, renderer);
     rect = new SDL_Rect {
         (int) x,
         (int) y,
@@ -20,7 +22,6 @@ void Player::init(float x, float y) {
     this->y = y;
 }
 
-
 void Player::render( SDL_Renderer* renderer) {
     rect = new SDL_Rect {
         (int) x,
@@ -28,9 +29,20 @@ void Player::render( SDL_Renderer* renderer) {
         (int) width,
         (int) height
     };
+    if (state == 'W') {
+        animW->update(renderer, rect);
+    }else if (state == 'S') {
+        animS->update(renderer, rect);
+        if(animS->finish) {
+            state = 'W';
+            animW->init();
+        }
+    }
+
     // std::cout << x <<" "<< y << std::endl;
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, rect);
+    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+    // SDL_RenderFillRect(renderer, rect);
 }
 
 void Player::move(char dir) {
@@ -45,14 +57,31 @@ void Player::kinetic(float dt) {
     }
 }
 
+void Player::changeArrow(char type) {
+    this->type = type;
+    if(type == 'F') {
+        animS->updateTime = 20;
+    }else if(type == 'P') {
+        animS->updateTime = 100;
+    }
+    else {
+        animS->updateTime = 50;
+    }
+    SDL_Log("Changing arrow state to %c", type);
+}
 
-Bullet::Bullet(float posx, float posy) {
-    x = posx;
-    y = posy;
+
+Bullet::Bullet(float posx, float posy, char type, SDL_Renderer* renderer) {
+    this->x = posx;
+    this->y = posy;
+    this->type = type;
     destroyed = false;
+    set_arrow(type, renderer);
+    // anims = {animN, animF, animPN, animPR};
+
     rect = new SDL_Rect {
         (int) x,
-        (int) y,
+        (int) (y-width/2),
         (int) width,
         (int) height
     };
@@ -71,16 +100,48 @@ void Bullet::render(SDL_Renderer* renderer) {
     }
     rect = new SDL_Rect {
         (int) x,
-        (int) y,
+        (int) (y-width/4),
         (int) width,
         (int) height
     };
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, rect);
+    anim->update(renderer, rect);
+    // for (Animation* anim : anims) {
+    //     if (type == anim->id) {
+    //         anim->update(renderer, rect);
+    //         break;
+    //     }
+    // }
+
+
+    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    // SDL_RenderFillRect(renderer, rect);
+}
+
+void Bullet::set_arrow(char t,  SDL_Renderer* renderer) {
+    switch(t) {
+        case 'N':
+            anim = new Animation(t, 100, this->Nimages, renderer);
+        break;
+        case 'F':
+            speed = speed * 2;
+            anim = new Animation(t, 100, this->Fimages, renderer);
+        break;
+        case 'p':
+            att = 2;
+            anim = new Animation(t, 100, this->PNimages, renderer);
+        break;
+        case 'P':
+            width = 2*width;
+            height = 2*height;
+        att = 4;
+            anim = new Animation(t, 100, this->PRimages, renderer);
+        break;
+    }
+
 }
 
 void Bullet::destroy() {
-    SDL_Log("Bullet::destroy");
+    // SDL_Log("Bullet::destroy");
 }
 
 
