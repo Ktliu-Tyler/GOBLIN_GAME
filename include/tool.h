@@ -31,4 +31,9 @@ class Animation {
     bool update(SDL_Renderer* renderer, SDL_Rect *rect);
 };
 
+
+class Recoder {
+
+};
+
 #endif //TOOL_H
