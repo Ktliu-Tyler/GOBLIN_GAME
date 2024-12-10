@@ -18,15 +18,17 @@ public:
     void kinetic(float dt);
     void destroy();
     void hurted(int att);
-    void ifdied();
+    int ifdied();
+    int getAttack();
     float x, y;
     bool destroyed = false;
+    bool attacked = false;
 private:
+    int hpMAX = 10;
     int hp = 1;
     float vx=100, vy=100;
     float speed=BDSPEED;
     float width=100, height=100;
 };
-
 
 

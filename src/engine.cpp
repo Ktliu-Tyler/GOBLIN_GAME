@@ -8,16 +8,18 @@ SDL_Window *mywindow = nullptr;
 SDL_Renderer *renderer = nullptr;
 SDL_Texture *background = nullptr;
 
+GameRecorder *game_recorder = nullptr;
 menu *MenuPage = nullptr;
 playground *PlayPage = nullptr;
+
 std::vector<std::string> playbg = PLAYGROUND_BACKGROUND;
 std::vector<std::string> playbgMove = PLAYGROUND_BACKGROUND_MOVE;
 const Uint8* keystate = (SDL_GetKeyboardState(NULL));
 int PAGE_ID = 0;
+int prePage_ID = 0;
 
 
 
-int game_is_running = TRUE;
 int last_frame_time = 0;
 float delta_time = 0;
 
@@ -48,7 +50,7 @@ int initialize_window() {
         SDL_Log("TTF Error: %s\n", SDL_GetError());
         return FALSE;
     }
-    TTF_Font* font = TTF_OpenFont("../myFont/arial.ttf", 24);
+    TTF_Font* font = TTF_OpenFont(FONT, 24);
     if (!font) {
         fprintf(stderr, "Font Error: %s\n", TTF_GetError());
         SDL_Log("Font Error: %s\n", TTF_GetError());
@@ -59,9 +61,9 @@ int initialize_window() {
 }
 
 void setup() {
-    MenuPage = new menu(MENU_BACKGROUND, renderer);
-    PlayPage = new playground(playbg[1], playbgMove[1], renderer);
-    // background = loadTexture("../imgs/background2.jpg", renderer);
+    game_recorder = new GameRecorder(GAMERECORD_FILE);
+    MenuPage = new menu(MENU_BACKGROUND, renderer, game_recorder);
+    PlayPage = new playground(playbg[1], playbgMove[1], renderer, game_recorder);
 }
 
 // 在迴圈裡
@@ -74,6 +76,7 @@ void process_input() {
     }else if (PAGE_ID == PLAYGROUNDID) {
         PAGE_ID = PlayPage->process_input(&event, keystate);
     }
+    change_page();
 }
 
 int update() {
@@ -83,10 +86,11 @@ int update() {
     last_frame_time = SDL_GetTicks();
 
     if (PAGE_ID == MENUID) {
-        return MenuPage->update(delta_time);
+        PAGE_ID = MenuPage->update(delta_time);
     }else if (PAGE_ID == PLAYGROUNDID) {
-        return PlayPage->update(delta_time);
+        PAGE_ID = PlayPage->update(delta_time);
     }
+    change_page();
     return game_is_running;
 }
 
@@ -96,10 +100,20 @@ void render() {
     }else if (PAGE_ID == PLAYGROUNDID) {
         PlayPage->render(renderer);
     }
-    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    // SDL_RenderClear(renderer);
-    // SDL_RenderCopy(renderer, background, nullptr, nullptr);
-    // SDL_RenderPresent(renderer);
+}
+
+void change_page() {
+    if (PAGE_ID != prePage_ID) {
+        prePage_ID = PAGE_ID;
+        if (PAGE_ID == PLAYGROUNDID || PAGE_ID == PLAYGROUNDID_RESTART) {
+            prePage_ID = PLAYGROUNDID;
+            PAGE_ID = PLAYGROUNDID;
+            SDL_Log("Play Game");
+            PlayPage = new playground(playbg[1], playbgMove[1], renderer, game_recorder);
+        }else if (PAGE_ID == MENUID) {
+            SDL_Log("MENU");
+        }
+    }
 }
 
 void destroy_window() {

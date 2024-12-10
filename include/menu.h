@@ -16,10 +16,11 @@ class menu {// Menu class
     public:
     SDL_Texture *background = nullptr; // 背景
     SDL_Renderer *renderer = nullptr; // 渲染器
+    GameRecorder *recorder = nullptr;
     int update(float deltatime);
     int process_input(SDL_Event *event);
     void render(SDL_Renderer *renderer);
-    menu(std::string path, SDL_Renderer* renderer);
+    menu(std::string path, SDL_Renderer* renderer, GameRecorder *recorder);
     ~menu();
 };
 

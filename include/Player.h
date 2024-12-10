@@ -22,8 +22,10 @@ public:
     void changeArrow(char type);
     const std::vector<std::string> Wimages = PLAYER_WALK_IMAGES;
     const std::vector<std::string> Simages = PLAYER_SHOOT_IMAGES;
+    const std::vector<std::string> Dimages = PLAYER_DIED_IMAGES;
     Animation* animW = nullptr;
     Animation* animS = nullptr;
+    Animation* animD = nullptr;
     float x, y, vx=100, vy=100;
     float speed;
     float width;

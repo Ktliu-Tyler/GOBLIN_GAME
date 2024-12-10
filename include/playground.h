@@ -15,19 +15,24 @@
 #define PLAYGROUND_H
 #endif //MENU_H
 
-inline Player *player;
-inline std::vector<Bullet *> bullets;
-inline std::vector<Enemy *> enemys;
 
 class playground { // 遊戲介面 class
     private:
     float backgroundX;
     int timecounter = 0;
     int enemyNUM = 0;
+    int chbgX = -300;
+    int gameStart = false;
     public:
     SDL_Texture *background = nullptr;
     SDL_Texture *backgroundMove = nullptr;
+    SDL_Texture *backgroundChange = nullptr;
     SDL_Renderer *renderer = nullptr;
+    GameRecorder *recorder = nullptr;
+    Player *player;
+    Scoreboard *scoreboard;
+    std::vector<Bullet *> bullets;
+    std::vector<Enemy *> enemys;
     int update(float deltatime);
     int process_input(SDL_Event *event, const Uint8* keystate);
     void render(SDL_Renderer *renderer);
@@ -36,7 +41,9 @@ class playground { // 遊戲介面 class
     void new_Enemy();
     void bullet_update(float deltatime);
     void enemy_update(float deltatime);
-    playground(std::string path,std::string pathMove, SDL_Renderer* renderer);
+    int gameOVER_ANIME();
+    void changebd();
+    playground(std::string path,std::string pathMove, SDL_Renderer* renderer, GameRecorder *recorder);
     ~playground();
 };
 

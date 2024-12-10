@@ -11,6 +11,7 @@ Player::Player(float posx, float posy, float w, float h, float sp, SDL_Renderer*
     yMin = ym;
     animW = new Animation('w', 100, this->Wimages, renderer);
     animS = new Animation('s', 50, this->Simages, renderer);
+    animD = new Animation('D', 1000, this->Dimages, renderer);
     rect = new SDL_Rect {
         (int) x,
         (int) y,
@@ -39,6 +40,8 @@ void Player::render( SDL_Renderer* renderer) {
             state = 'W';
             animW->init();
         }
+    }else if (state == 'D') {
+        animD->update(renderer, rect);
     }
 
     // std::cout << x <<" "<< y << std::endl;
