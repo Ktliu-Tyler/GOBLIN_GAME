@@ -10,13 +10,19 @@ Player::Player(float posx, float posy, float w, float h, float sp, SDL_Renderer*
     yMax = yM;
     yMin = ym;
     animW = new Animation('w', 100, this->Wimages, renderer);
-    animS = new Animation('s', 50, this->Simages, renderer);
-    animD = new Animation('D', 1000, this->Dimages, renderer);
+    animS = new Animation('s', 100, this->Simages, renderer);
+    animD = new Animation('D', 100, this->Dimages, renderer);
     rect = new SDL_Rect {
         (int) x,
         (int) y,
         (int) width,
         (int) height
+    };
+    hitrect = new SDL_Rect {
+        (int) x,
+        (int) y,
+        (int) PLAYER_HIT_W,
+        (int) PLAYER_HIT_H
     };
 }
 
@@ -31,6 +37,12 @@ void Player::render( SDL_Renderer* renderer) {
         (int) y,
         (int) width,
         (int) height
+    };
+    hitrect = new SDL_Rect {
+        (int) x+(PLAYER_h-PLAYER_HIT_H)/2,
+        (int) y+(PLAYER_h-PLAYER_HIT_H)/2,
+        (int) PLAYER_HIT_W,
+        (int) PLAYER_HIT_H
     };
     if (state == 'W') {
         animW->update(renderer, rect);
@@ -95,6 +107,7 @@ Bullet::Bullet(float posx, float posy, char type, SDL_Renderer* renderer) {
         (int) width,
         (int) height
     };
+
 }
 
 void Bullet::kinetic(float dt) {

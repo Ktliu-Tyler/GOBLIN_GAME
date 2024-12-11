@@ -20,7 +20,7 @@ SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer) {
     SDL_Texture* newTexture = nullptr;
     SDL_Surface* loadedSurface = IMG_Load(path.c_str());
     if (loadedSurface == nullptr) {
-         SDL_Log("Unable to load image %s", IMG_GetError);
+         SDL_Log("Unable to load image %s", path.c_str());
     } else {
         newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
         if (newTexture == nullptr) {
@@ -49,9 +49,9 @@ void Animation::addAnimationFrame(const std::string &path, SDL_Renderer* rendere
 
 SDL_Texture *Animation::getCurrentFrame() {
     timeCounter++;
-    if (timeCounter >= updateTime) {
+    if (timeCounter >= updateTime && !stop) {
         currentFrameIndex++;
-        if (currentFrameIndex == frameMax) {
+        if (currentFrameIndex >= frameMax-3) {
             currentFrameIndex = 0;
             finish = true;
         }
@@ -63,7 +63,8 @@ SDL_Texture *Animation::getCurrentFrame() {
 
 bool Animation::update(SDL_Renderer* renderer, SDL_Rect *rect) {
     SDL_RenderCopy(renderer, getCurrentFrame(), nullptr, rect);
-    return (this->currentFrameIndex>=this->frameMax-1);
+    return 0;
+    // return (this->currentFrameIndex>=this->frameMax-1);
 }
 
 void Animation::init() {

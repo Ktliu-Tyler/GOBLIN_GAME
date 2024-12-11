@@ -3,9 +3,11 @@
 //
 
 #ifndef PLAYER_H
+#define PLAYER_H
 #include <SDL.h>
 #include "constants.h"
 #include "tool.h"
+// #include "SDL.h"
 // #define PLAYER_H
 #endif //PLAYER_H
 
@@ -13,7 +15,8 @@ class Player {
 // 玩家 class
 public:
     Player(float x, float y, float width ,float height, float speed, SDL_Renderer* renderer,float yMax=WINDOW_HEIGHT,float yMin=0);
-    SDL_Rect *rect;
+    SDL_Rect *rect = nullptr;
+    SDL_Rect *hitrect = nullptr;
     void init(float x, float y);
     void render(SDL_Renderer* renderer);
     void move(char dir);
@@ -36,7 +39,6 @@ public:
     char state = 'W';
     char type = 'N';
 };
-
 
 class Bullet {
     public:

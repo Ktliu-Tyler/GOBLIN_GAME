@@ -5,6 +5,7 @@
 #ifndef MENU_H
 #include <iostream>
 #include "constants.h"
+// #include "Player.h"
 #include "tool.h"
 #include <string>
 
@@ -17,6 +18,8 @@ class menu {// Menu class
     SDL_Texture *background = nullptr; // 背景
     SDL_Renderer *renderer = nullptr; // 渲染器
     GameRecorder *recorder = nullptr;
+    // Player *player = nullptr;
+    bool startMenu =false;
     int update(float deltatime);
     int process_input(SDL_Event *event);
     void render(SDL_Renderer *renderer);

@@ -6,7 +6,7 @@
 
 #include "../SDL_lib/SDL_bgi.h"
 
-Enemy::Enemy(float posx, float posy, float speed, int Hp) {
+Enemy::Enemy(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer) {
     this->x = posx;
     this->y = posy;
     this->hp = Hp;
@@ -20,6 +20,15 @@ Enemy::Enemy(float posx, float posy, float speed, int Hp) {
         (int) width,
         (int) height
     };
+    this->hitrect = new SDL_Rect {
+        (int) x,
+        (int) y,
+        (int) (width*ENEMY_HIT_RATE),
+        (int) (height*ENEMY_HIT_RATE)
+    };
+    animW = new Animation('w', 100, this->Wimages, renderer);
+    animS = new Animation('s', 50, this->Simages, renderer);
+    animD = new Animation('D', 100, this->Dimages, renderer);
 }
 
 void Enemy::init(float x, float y, float speed, int Hp) {
@@ -38,9 +47,20 @@ void Enemy::kinetic(float dt) {
 int Enemy::ifdied() {
     if(x < -width) {
         destroyed = true;
+        animD->finish = true;
+        animD->stop = true;
         return 2;
     }
     if(hp <= 0) {
+        hp = 0;
+        state = 'D';
+        // SDL_Log("die1");
+        // if(destroyed==false) {
+        //     animD->finish = false;
+        // }
+        // if(animD->finish) {
+        //     animD->stop = true;
+        // }
         destroyed = true;
         return 1;
     }
@@ -61,9 +81,29 @@ void Enemy::render(SDL_Renderer *renderer) {
         (int) width,
         (int) height
     };
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, rect);
-    renderProgressBar(x, y, width, 15, hp, hpMAX, myRED, myGREY, renderer);
+    this->hitrect = new SDL_Rect {
+        (int) (x+width*(1-ENEMY_HIT_RATE)/2),
+        (int) (y+height*(1-ENEMY_HIT_RATE)/2),
+        (int) (width*ENEMY_HIT_RATE),
+        (int) (height*ENEMY_HIT_RATE)
+    };
+    if (state == 'W') {
+        animW->update(renderer, rect);
+    }else if (state == 'S') {
+        animS->update(renderer, rect);
+        if(animS->finish) {
+            state = 'W';
+            animW->init();
+        }
+    }else if (state == 'D') {
+        animD->update(renderer, rect);
+    }
+
+    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    // SDL_RenderFillRect(renderer, rect);
+    if(!destroyed) {
+        renderProgressBar(x, y-15, width, 13, hp, hpMAX, myRED, myGREY, renderer);
+    }
 
 }
 
@@ -75,6 +115,26 @@ int Enemy::getAttack() {
 void Enemy::destroy() {
     // SDL_Log("Enemy::destroy");
 }
+//
+
+Monster::Monster(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):Enemy(posx, posy, speed, Hp, renderer) {
+    Wimages = PLAYER_WALK_IMAGES;
+    Simages = PLAYER_SHOOT_IMAGES;
+    Dimages = PLAYER_DIED_IMAGES;
+
+    animW = new Animation('w', 100, this->Wimages, renderer);
+    animS = new Animation('s', 50, this->Simages, renderer);
+    animD = new Animation('D', 100, this->Dimages, renderer);
+}
 
 
+Human::Human(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):Enemy(posx, posy, speed, Hp, renderer) {
+    Wimages = HUMAN_IMAGES;
+    Simages = PLAYER_SHOOT_IMAGES;
+    Dimages = EXPLODE_IMAGES;
+
+    animW = new Animation('w', 100, this->Wimages, renderer);
+    animS = new Animation('s', 50, this->Simages, renderer);
+    animD = new Animation('D', 100, this->Dimages, renderer);
+}
 

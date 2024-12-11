@@ -42,6 +42,7 @@ class playground { // 遊戲介面 class
     void bullet_update(float deltatime);
     void enemy_update(float deltatime);
     int gameOVER_ANIME();
+    int gameSTOP();
     void changebd();
     playground(std::string path,std::string pathMove, SDL_Renderer* renderer, GameRecorder *recorder);
     ~playground();

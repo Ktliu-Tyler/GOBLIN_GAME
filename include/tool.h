@@ -35,6 +35,7 @@ class Animation {
     int timeCounter = 0;
     void addAnimationFrame(const std::string& path, SDL_Renderer* renderer);
     public:
+    bool stop = false;
     int updateTime = 0;
     int finish = false;
     void init();
@@ -45,35 +46,7 @@ class Animation {
     bool update(SDL_Renderer* renderer, SDL_Rect *rect);
 };
 
-//
-// class Scoreboard {
-// public:
-//     Scoreboard(SDL_Renderer* renderer, TTF_Font* font);
-//     ~Scoreboard();
-//
-//     void setScore(int score);
-//     void setHealth(int health);
-//     void setLevel(int level);
-//
-//     void render();
-//
-// private:
-//     SDL_Renderer* renderer;
-//     TTF_Font* font;
-//
-//     int score;
-//     int health;
-//     int level;
-//
-//     SDL_Texture* createTextTexture(const std::string& text, SDL_Color color);
-//     void renderText(const std::string& text, int x, int y, SDL_Color color);
-//
-//     SDL_Texture* scoreTexture;
-//     SDL_Texture* healthTexture;
-//     SDL_Texture* levelTexture;
-//
-//     void updateTextures();
-// };
+
 class Scoreboard {
 public:
     Scoreboard(SDL_Renderer* renderer, TTF_Font* font);
@@ -107,6 +80,7 @@ private:
     SDL_Texture* levelTexture;
 };
 
+
 class GameRecorder {
 public:
     GameRecorder(const std::string& filename);
@@ -122,6 +96,7 @@ private:
     int highscore=0;
     int lastScore=0;
 };
+
 
 void renderProgressBar(int x, int y, int w, int h, int value, int max_value, SDL_Color fgColor, SDL_Color bgColor, SDL_Renderer *renderer);
 

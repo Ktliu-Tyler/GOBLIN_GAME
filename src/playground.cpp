@@ -24,7 +24,7 @@ playground::playground(std::string path, std::string pathMove, SDL_Renderer *ren
     fontBIG =  TTF_OpenFont(FONT, 100);
 
 
-    player = new Player(PLAYER_W+30, WINDOW_HEIGHT-WINDOW_M_HEIGHT, PLAYER_W, PLAYER_H, PLAYER_SPEED, renderer, WINDOW_HEIGHT,WINDOW_HEIGHT-WINDOW_M_HEIGHT);
+    player = new Player(PLAYER_W+30, WINDOW_HEIGHT-WINDOW_M_HEIGHT, PLAYER_W, PLAYER_h, PLAYER_SPEED, renderer, WINDOW_HEIGHT,WINDOW_HEIGHT-WINDOW_M_HEIGHT);
     scoreboard = new Scoreboard(renderer, font);
     scoreboard->setHealth(PLAYER_HP_MAX);
     scoreboard->setScore(0);
@@ -96,13 +96,16 @@ int playground::update(float deltatime) {
 void playground::render(SDL_Renderer *renderer) {
     SDL_RenderClear(renderer);
     bdrender();
-    for (auto& bullet : bullets) {
-        bullet->render(renderer);
-    }
+
     for (auto& enemy : enemys) {
         enemy->render(renderer);
     }
-    player->render(renderer);
+    for (auto& bullet : bullets) {
+        bullet->render(renderer);
+    }
+    if(!player->animD->stop) {
+        player->render(renderer);
+    }
     scoreboard->render();
     if(scoreboard->Health() <= 0 && !scoreboard->game_over) {
         scoreboard->game_over = true;
@@ -117,7 +120,9 @@ void playground::render(SDL_Renderer *renderer) {
         }
     }
     if(scoreboard->game_over && player->animD->finish) {
+        player->animD->stop = true;
         changebd();
+
     }
     SDL_RenderPresent(renderer);
 }
@@ -143,7 +148,7 @@ void playground::bdrender() {
 void playground::changebd() {
     SDL_Rect renderQuad = { chbgX, -60, WINDOW_WIDTH+600, WINDOW_HEIGHT+90 };
     SDL_RenderCopy(renderer, this->backgroundChange, nullptr, &renderQuad);
-    chbgX -=2;
+    chbgX -=3;
 }
 
 void playground::bullet_update(float deltatime) {
@@ -165,25 +170,33 @@ void playground::enemy_update(float deltatime) {
         Enemy* enemy = *it;
         enemy->kinetic(deltatime);
         for (auto bullet: bullets) {
-            if(SDL_HasIntersection(bullet->rect, enemy->rect)) {
+            if(SDL_HasIntersection(bullet->rect, enemy->hitrect)&& !enemy->destroyed) {
                 enemy->hurted(bullet->att);
                 bullet->destroyed = true;
             }
         }
-        if(SDL_HasIntersection(enemy->rect, player->rect) && !enemy->attacked) {
+        if(SDL_HasIntersection(enemy->hitrect, player->hitrect) && !enemy->attacked && !enemy->destroyed) {
             scoreboard->getHurt(enemy->getAttack());
             enemy->attacked = true;
             SDL_Log("Hurt");
         }
         int test = enemy->ifdied();
-        if (enemy->destroyed) {
+
+        if (enemy->destroyed && enemy->animD->finish) {
             enemy->destroy();
-            if(test == 1) {
+            if(test == 1 && enemy->dieANIMcount == 0) {
                 scoreboard->getScore(enemy->getAttack());
+                enemy->animD->finish = false;
+                enemy->state = 'D';
+                enemy->speed = BDSPEED;
+                enemy->dieANIMcount++;
             }
-            delete enemy;
-            enemyNUM--;
-            it = enemys.erase(it);
+            if(enemy->animD->finish) {
+                delete enemy;
+                enemyNUM--;
+                it = enemys.erase(it);
+            }
+
         } else {
             ++it;
         }
@@ -193,7 +206,14 @@ void playground::enemy_update(float deltatime) {
 void playground::new_Enemy() {
     int n = ENEMYNUMMAX-enemyNUM;
     for (int i = 0; i < n; i++) {
-        enemys.push_back(new Enemy(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100), rand()%200, rand()%10));
+        int enemyType = rand()%ENEMPTYPE;
+        if(enemyType == 0) {
+            enemys.push_back(new Enemy(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100), rand()%200, rand()%10+1, renderer));
+        }else if (enemyType == 1) {
+            enemys.push_back(new Monster(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100), rand()%200, rand()%10+1, renderer));
+        }else if (enemyType == 2) {
+            enemys.push_back(new Human(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100), rand()%200, rand()%10+1, renderer));
+        }
         // SDL_Log("Enemy born at %f, %f", enemys[i]->x, enemys[i]->y);
         enemyNUM++;
     }
@@ -201,6 +221,35 @@ void playground::new_Enemy() {
 }
 
 int playground::gameOVER_ANIME() {
+    int animeEnd = false;
+    recorder->saveScore(scoreboard->Score());
+    int PageID = 0;
+    while (!animeEnd) {
+        SDL_Event event;
+        SDL_PollEvent(&event);
+        if (event.type==SDL_QUIT) {
+            game_is_running = false;
+            break;
+        }else if (event.type==SDL_KEYDOWN) {
+            if (event.key.keysym.sym == SDLK_m) {
+                PageID = MENUID;
+                return PageID;
+                break;
+            }
+            if (event.key.keysym.sym == SDLK_r) {
+                PageID = PLAYGROUNDID_RESTART;
+                return PageID;
+                break;
+            }
+        }
+        renderText("GAME OVER", WINDOW_WIDTH/2, WINDOW_HEIGHT/2, myWHITE,fontBIG, renderer, 'm');
+        renderText("Press 'r' to restart, or Press 'm' to back to Menu.", WINDOW_WIDTH/2, WINDOW_HEIGHT/2+60, myWHITE,font, renderer, 'm');
+        SDL_RenderPresent(renderer);
+    }
+    return PageID;
+}
+
+int playground::gameSTOP() {
     int animeEnd = false;
     recorder->saveScore(scoreboard->Score());
     int PageID = 0;
