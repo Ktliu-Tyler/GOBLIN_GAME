@@ -127,7 +127,7 @@ void playground::render(SDL_Renderer *renderer) {
         changebd();
         if (chbgX < -(WINDOW_WIDTH+600)) {
             gameStart = true;
-            this->musicPlayer->playGamining();
+            this->musicPlayer->playGamining(gametype);
             chbgX = WINDOW_WIDTH;
         }
     }
@@ -185,11 +185,14 @@ void playground::enemy_update(float deltatime) {
             if(SDL_HasIntersection(bullet->rect, enemy->hitrect)&& !enemy->destroyed) {
                 enemy->hurted(bullet->att);
                 bullet->destroyed = true;
+                scoreboard->getLevel(1);
+                enemy->animW->playSound(4);
             }
         }
         if(SDL_HasIntersection(enemy->hitrect, player->hitrect) && !enemy->attacked && !enemy->destroyed) {
             scoreboard->getHurt(enemy->getAttack());
             enemy->attacked = true;
+            player->animD->playSound(5);
             SDL_Log("Hurt");
         }
         int test = enemy->ifdied();
@@ -199,14 +202,21 @@ void playground::enemy_update(float deltatime) {
             if(test == 1 && enemy->dieANIMcount == 0) {
                 scoreboard->getScore(enemy->getAttack());
                 scoreboard->getNP(enemy->getAttack()/3+2);
+                scoreboard->getLevel(enemy->getAttack());
                 enemy->animD->finish = false;
                 enemy->state = 'D';
                 enemy->speed = BDSPEED;
                 enemy->dieANIMcount++;
+                enemy->animD->playSound(7);
             }
             if(enemy->animD->finish) {
                 delete enemy;
                 enemyNUM--;
+                if(enemy->type=='B') {
+                    scoreboard->state = 'n';
+                    scoreboard->setLevel(0);
+                    enemyNUM = 0;
+                }
                 it = enemys.erase(it);
             }
 
@@ -218,24 +228,38 @@ void playground::enemy_update(float deltatime) {
 
 void playground::new_Enemy() {
     int n = ENEMYNUMMAX-enemyNUM;
-    for (int i = 0; i < n; i++) {
-        int enemyType = rand()%ENEMPTYPE;
-        int hp = rand()%10+1;
-        if(enemyType == 0) {
-            enemys.push_back(new Enemy(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200,hp, renderer));
-        }else if (enemyType == 1) {
-            enemys.push_back(new Monster(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200, hp, renderer));
-        }else if (enemyType == 2) {
-            enemys.push_back(new Human(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200, hp, renderer));
+    if (scoreboard->state == 'n') {
+        for (int i = 0; i < n; i++) {
+            int enemyType = rand()%ENEMPTYPE;
+            int hp = rand()%6+3;
+            if(enemyType == 0) {
+                enemys.push_back(new Enemy(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200,hp, renderer));
+            }else if (enemyType == 1) {
+                // if(hp <6) {
+                //     hp = 6;
+                // }
+                // hp = 20;
+                enemys.push_back(new Human(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200, hp, renderer));
+            }else if (enemyType == 2) {
+                enemys.push_back(new Human(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200, hp, renderer));
+            }
+            // SDL_Log("Enemy born at %f, %f", enemys[i]->x, enemys[i]->y);
+            enemyNUM++;
         }
-        // SDL_Log("Enemy born at %f, %f", enemys[i]->x, enemys[i]->y);
-        enemyNUM++;
+    }else  if (scoreboard->state == 'g'){
+        Monster *e = new Monster(rand()%WINDOW_WIDTH+WINDOW_WIDTH, WINDOW_HEIGHT/4, -100, 30, renderer);
+        e->type = 'B';
+        enemys.push_back(e);
+        enemyNUM = 0;
+        scoreboard->state = 'B';
     }
+
 
 }
 
 int playground::gameOVER_ANIME() {
     int animeEnd = false;
+    // Shake s1(WINDOW_WIDTH/2-100,WINDOW_HEIGHT/2,0, 10, renderer);
     recorder->saveScore(scoreboard->Score());
     int PageID = 0;
     while (!animeEnd) {
@@ -256,8 +280,10 @@ int playground::gameOVER_ANIME() {
                 break;
             }
         }
+
         renderText("GAME OVER", WINDOW_WIDTH/2, WINDOW_HEIGHT/2, myWHITE,fontBIG, renderer, 'm');
         renderText("Press 'r' to restart, or Press 'm' to back to Menu.", WINDOW_WIDTH/2, WINDOW_HEIGHT/2+60, myWHITE,font, renderer, 'm');
+        // s1.render(renderer);
         SDL_RenderPresent(renderer);
     }
     return PageID;
@@ -285,6 +311,7 @@ int playground::gameSTOP() {
                 break;
             }
         }
+        // SDL_RenderClear(renderer);
         renderText("GAME OVER", WINDOW_WIDTH/2, WINDOW_HEIGHT/2, myWHITE,fontBIG, renderer, 'm');
         renderText("Press 'r' to restart, or Press 'm' to back to Menu.", WINDOW_WIDTH/2, WINDOW_HEIGHT/2+60, myWHITE,font, renderer, 'm');
         SDL_RenderPresent(renderer);
@@ -302,4 +329,23 @@ playground::~playground() {
 
 playground2::playground2(std::string path, std::string pathMove, SDL_Renderer *renderer, GameRecorder *recorder, MusicPlayer *music_player):playground(path, pathMove, renderer, recorder, music_player) {
     SDL_Log("playground2()");
+    gametype = 2;
+}
+
+void playground2::new_Enemy() {
+    int n = ENEMYNUMMAX-enemyNUM;
+    for (int i = 0; i < n; i++) {
+        int enemyType = rand()%ENEMPTYPE;
+        int hp = rand()%10+1;
+        if(enemyType == 0) {
+            enemys.push_back(new Human3(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200,hp, renderer));
+        }else if (enemyType == 1) {
+            enemys.push_back(new Human1(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200, hp, renderer));
+        }else if (enemyType == 2) {
+            enemys.push_back(new Human2(rand()%WINDOW_WIDTH+WINDOW_WIDTH, (rand()%WINDOW_M_HEIGHT-30-hp*15)+(WINDOW_HEIGHT-WINDOW_M_HEIGHT-100+hp*15), rand()%200, hp, renderer));
+        }
+        // SDL_Log("Enemy born at %f, %f", enemys[i]->x, enemys[i]->y);
+        enemyNUM++;
+    }
+
 }

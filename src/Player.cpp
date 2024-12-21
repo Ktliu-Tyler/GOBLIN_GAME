@@ -11,7 +11,7 @@ Player::Player(float posx, float posy, float w, float h, float sp, SDL_Renderer*
     yMin = ym;
     animW = new Animation('w', 80, this->Wimages, renderer, WALK_SOUND);
     animS = new Animation('s', PLAYER_SHOOT_T, this->Simages, renderer, SHOOT1_SOUND);
-    animD = new Animation('D', 60, this->Dimages, renderer);
+    animD = new Animation('D', 50, this->Dimages, renderer, HURT_SOUND);
     rect = new SDL_Rect {
         (int) x,
         (int) y,

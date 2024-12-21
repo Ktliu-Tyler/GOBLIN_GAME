@@ -25,7 +25,7 @@ inline SDL_Color myYELLOW = { 255, 255, 0, 255 };
 inline SDL_Color myMAGENTA = { 255, 0, 255, 255 };
 inline SDL_Color myCYAN = { 0, 255, 255, 255 };
 inline SDL_Color myGREY = { 128, 128, 128, 255 };
-
+inline SDL_Color myBLUE2 = { 51, 255, 251, 255 };
 //一些遊戲工具
 SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer);// 載入圖片
 
@@ -62,11 +62,13 @@ public:
     void getHurt(int att);
     void getScore(int score);
     void getNP(int NP);
+    void getLevel(int level);
     int Score();
     int Health();
     int NP();
     void render();
     int game_over = false;
+    int state = 'n';
 
 private:
     SDL_Renderer* renderer;
@@ -74,7 +76,7 @@ private:
 
     int score;
     int health;
-    int level;
+    int level = 0;
     int np;
 
     // void renderProgressBar(int x, int y, int w, int h, int value, int max_value, SDL_Color fgColor, SDL_Color bgColor);
@@ -84,6 +86,7 @@ private:
     SDL_Texture* scoreTexture;
     SDL_Texture* healthTexture;
     SDL_Texture* levelTexture;
+    SDL_Texture* npTexture;
 };
 
 
@@ -110,9 +113,10 @@ public:
     MusicPlayer(const std::vector<std::string>& Paths);
     Mix_Music *musicMenu = nullptr;
     Mix_Music *musicPlayground = nullptr;
+    Mix_Music *musicPlayground2 = nullptr;
     Mix_Music *musicGameOver = nullptr;
     void playMenu();
-    void playGamining();
+    void playGamining(int type=1);
     void playGameOver();
     void stop();
     ~MusicPlayer();

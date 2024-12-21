@@ -34,6 +34,7 @@ public:
     int dieANIMcount = 0;
     float speed=BDSPEED;
     float rectRATE = 0.6;
+    char type = 'E';
 protected:
     int hpMAX = 10;
     int hp = 1;
@@ -49,4 +50,24 @@ public:
 class Human: public Enemy {
 public:
     Human(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer);
+};
+
+class Human1: public Enemy {
+public:
+    Human1(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer);
+};
+
+class Human2: public Enemy {
+public:
+    Human2(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer);
+};
+
+class Human3: public Enemy {
+public:
+    Human3(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer);
+};
+
+class Shake: public Enemy {
+public:
+    Shake(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer);
 };

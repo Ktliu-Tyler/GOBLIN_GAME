@@ -18,6 +18,7 @@ std::vector<std::string> playbg = PLAYGROUND_BACKGROUND;
 std::vector<std::string> playbgMove = PLAYGROUND_BACKGROUND_MOVE;
 const Uint8* keystate = (SDL_GetKeyboardState(NULL));
 int PAGE_ID = 0;
+int gametype = 1;
 int prePage_ID = 0;
 int last_frame_time = 0;
 float delta_time = 0;
@@ -70,7 +71,7 @@ int initialize_window() {
 
 void setup() {
     SDL_Log("test1");
-    const std::vector<std::string> BGMpath = {MENUBGM, PLAYGROUNDBGM, GAMEOVERBGM};
+    const std::vector<std::string> BGMpath = {MENUBGM, PLAYGROUNDBGM, GAMEOVERBGM, PLAYGROUNDBGM2};
     BGMmusic = new MusicPlayer(BGMpath);
     SDL_Log("test2");
     game_recorder = new GameRecorder(GAMERECORD_FILE, renderer);
@@ -120,11 +121,21 @@ void render() {
 void change_page() {
     if (PAGE_ID != prePage_ID) {
         prePage_ID = PAGE_ID;
+        if(PAGE_ID == PLAYGROUNDID2) {
+            PAGE_ID = PLAYGROUNDID;
+            gametype =2;
+        }else if(PAGE_ID == PLAYGROUNDID){
+            gametype = 1;
+        }
         if (PAGE_ID == PLAYGROUNDID || PAGE_ID == PLAYGROUNDID_RESTART) {
             prePage_ID = PLAYGROUNDID;
             PAGE_ID = PLAYGROUNDID;
-            SDL_Log("Play Game");
-            PlayPage = new playground2(playbg[1], playbgMove[1], renderer, game_recorder, BGMmusic);
+            SDL_Log("Play Game 1");
+            if(gametype == 1){
+                PlayPage = new playground(playbg[1], playbgMove[1], renderer, game_recorder, BGMmusic);
+            }else if (gametype == 2) {
+                PlayPage = new playground2(playbg[0], playbgMove[0], renderer, game_recorder, BGMmusic);
+            }
         }else if (PAGE_ID == MENUID) {
             SDL_Log("MENU");
             MenuPage = new menu(MENU_BACKGROUND, renderer, game_recorder, BGMmusic);

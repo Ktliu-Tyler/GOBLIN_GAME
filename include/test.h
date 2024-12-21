@@ -26,6 +26,7 @@ inline SDL_Color myYELLOW = { 255, 255, 0, 255 };
 inline SDL_Color myMAGENTA = { 255, 0, 255, 255 };
 inline SDL_Color myCYAN = { 0, 255, 255, 255 };
 inline SDL_Color myGREY = { 128, 128, 128, 255 };
+inline SDL_Color myBLUE2 = { 51, 255, 251, 255 };
 
 //一些遊戲工具
 SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer);// 載入圖片
@@ -112,8 +113,9 @@ public:
     Mix_Music *musicMenu = nullptr;
     Mix_Music *musicPlayground = nullptr;
     Mix_Music *musicGameOver = nullptr;
+    Mix_Music *musicPlayground2 = nullptr;
     void playMenu();
-    void playGamining();
+    void playGamining(int type=1);
     void playGameOver();
     void stop();
     ~MusicPlayer();

@@ -10,13 +10,13 @@ inline TTF_Font* fontMENU;
 menu::menu(std::string path, SDL_Renderer *renderer, GameRecorder *recorder, MusicPlayer *music_player)  {
     SDL_Log("Creating menu...");
     this -> background = loadTexture(path, renderer);
+    anim = new Animation('M', 30, this->BGimages, renderer);
     this -> renderer = renderer;
     this -> recorder = recorder;
     this -> musicPlayer = music_player;
     // player = new Player(PLAYER_W+30, WINDOW_HEIGHT-WINDOW_M_HEIGHT, PLAYER_W, PLAYER_H, PLAYER_SPEED, renderer, WINDOW_HEIGHT,WINDOW_HEIGHT-WINDOW_M_HEIGHT);
     this->musicPlayer->playMenu();
     fontMENU =  TTF_OpenFont(FONT, 35);
-
 }
 
 int menu::process_input(SDL_Event *event) {
@@ -30,6 +30,11 @@ int menu::process_input(SDL_Event *event) {
                 SDL_Log("SDL_s");
                 SDL_Log("game");
                 return PLAYGROUNDID;
+            }
+            if (event->key.keysym.sym == SDLK_n) {
+                SDL_Log("SDL_s");
+                SDL_Log("game2");
+                return PLAYGROUNDID2;
             }
             if (event->key.keysym.sym == SDLK_w) {
                 SDL_Log("SDL_w");
@@ -49,9 +54,18 @@ int menu::update(float deltatime) {
 
 void menu::render(SDL_Renderer *renderer) {
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, this->background, nullptr, nullptr);
-    renderText(std::to_string(recorder->HIGHSCORE()), WINDOW_WIDTH/2+20, WINDOW_HEIGHT/2-32 ,myWHITE,fontMENU, renderer, 'l');
-    renderText(std::to_string(recorder->LASTSCORE()), WINDOW_WIDTH/2+20, WINDOW_HEIGHT/2+13, myWHITE,fontMENU, renderer, 'l');
+    // SDL_RenderCopy(renderer, this->background, nullptr, nullptr);
+    SDL_Rect rect = {
+        0, 0, WINDOW_WIDTH, WINDOW_HEIGHT
+    };
+    anim->update(renderer, &rect);
+    std::string t1 = "HIGHSCORE: ";
+    t1.append(std::to_string(recorder->HIGHSCORE()));
+    std::string t2 = "LASTSCORE: ";
+    t2.append(std::to_string(recorder->HIGHSCORE()));
+
+    renderText(t1, WINDOW_WIDTH/2-180, WINDOW_HEIGHT-200 ,myWHITE,fontMENU, renderer, 'm');
+    renderText(t2, WINDOW_WIDTH/2+180, WINDOW_HEIGHT-200, myWHITE,fontMENU, renderer, 'm');
     SDL_RenderPresent(renderer);
 }
 

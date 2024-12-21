@@ -1,7 +1,7 @@
 //
 // Created by Liu KT on 2024/11/20.
 //
-#include "../include/test.h"
+#include "../include/tool.h"
 
 // #include "../include/engine.h"
 
@@ -32,12 +32,14 @@ SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer) {
 }
 
 void renderProgressBar(int x, int y, int w, int h, int value, int max_value, SDL_Color fgColor, SDL_Color bgColor, SDL_Renderer *renderer) {
-    // Render background bar
+    SDL_Rect outRect = { x-2, y-2, w+4, h+4 };
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(renderer, &outRect);
+
     SDL_Rect bgRect = { x, y, w, h };
     SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
     SDL_RenderFillRect(renderer, &bgRect);
 
-    // Render foreground bar
     int fgWidth = static_cast<int>((static_cast<float>(value) / max_value) * w);
     SDL_Rect fgRect = { x, y, fgWidth, h };
     SDL_SetRenderDrawColor(renderer, fgColor.r, fgColor.g, fgColor.b, fgColor.a);
@@ -65,6 +67,8 @@ void renderText(const std::string& text, int x, int y, SDL_Color color, TTF_Font
             dstRect = { x, y, width, height };
         }else if (type=='m') {
             dstRect = { x-width/2, y-height/2, width, height };
+        }else if (type=='r') {
+            dstRect = { x-width, y, width, height };
         }
         SDL_RenderCopy(renderer, texture, NULL, &dstRect);
         SDL_DestroyTexture(texture);
@@ -100,6 +104,7 @@ SDL_Texture *Animation::getCurrentFrame() {
             currentFrameIndex = 0;
             finish = true;
         }
+        // SDL_Log("SHAKE");
         timeCounter = 0;
 
     }
@@ -108,6 +113,7 @@ SDL_Texture *Animation::getCurrentFrame() {
 
 bool Animation::update(SDL_Renderer* renderer, SDL_Rect *rect) {
     SDL_RenderCopy(renderer, getCurrentFrame(), nullptr, rect);
+    // SDL_Log("SHAKE");
     return 0;
     // return (this->currentFrameIndex>=this->frameMax-1);
 }
@@ -124,11 +130,12 @@ void Animation::playSound(int channel) {
 
 
 Scoreboard::Scoreboard(SDL_Renderer* renderer, TTF_Font* font)
-    : renderer(renderer), font(font), score(0), health(100), level(1), np(30), scoreTexture(nullptr), healthTexture(nullptr), levelTexture(nullptr) {}
+    : renderer(renderer), font(font), score(0), health(100), level(1), np(30), scoreTexture(nullptr), healthTexture(nullptr),npTexture(nullptr), levelTexture(nullptr) {}
 
 Scoreboard::~Scoreboard() {
     if (scoreTexture) SDL_DestroyTexture(scoreTexture);
     if (healthTexture) SDL_DestroyTexture(healthTexture);
+    if (npTexture) SDL_DestroyTexture(npTexture);
     if (levelTexture) SDL_DestroyTexture(levelTexture);
 }
 
@@ -188,10 +195,22 @@ void Scoreboard::getNP(int NP) {
     }
 }
 
+void Scoreboard::getLevel(int level) {
+    this->level += level;
+    if(this->level > LEVEL_MAX) {
+        if(this->state == 'n') {
+            this->state = 'g';
+        }
+        this->level = LEVEL_MAX;
+    }
+}
+
+
 
 void Scoreboard::updateTextures() {
     if (this->scoreTexture) SDL_DestroyTexture(this->scoreTexture);
     if (this->healthTexture) SDL_DestroyTexture(this->healthTexture);
+    if (this->npTexture) SDL_DestroyTexture(this->npTexture);
     if (this->levelTexture) SDL_DestroyTexture(this->levelTexture);
 
     std::string t1 = "Score: ";
@@ -206,16 +225,22 @@ void Scoreboard::updateTextures() {
 }
 
 void Scoreboard::render() {
+    SDL_Color fgColor = myGREEN;
+    SDL_Color bgColor = myGREY;
+    renderText("LV " , SCOREBOARD_X, SCOREBOARD_Y, myWHITE, font, this->renderer, 'l');
+    renderProgressBar(SCOREBOARD_X+60, SCOREBOARD_Y, WINDOW_WIDTH-100, 30, level, LEVEL_MAX, fgColor, bgColor, this->renderer);
+
+
     std::string t1 = "Score: ";
     t1.append(std::to_string(score));
-    renderText(t1, SCOREBOARD_X, SCOREBOARD_Y, myWHITE, font, this->renderer, 'l');
+    renderText(t1, WINDOW_WIDTH-40, SCOREBOARD_Y+SCOREBOARD_BET, myWHITE, font, this->renderer, 'r');
 
-    SDL_Color fgColor = myRED;
-    SDL_Color bgColor = myGREY;
+    fgColor = myRED;
+    bgColor = myGREY;
     renderText("HP " , SCOREBOARD_X, SCOREBOARD_Y+SCOREBOARD_BET, myWHITE, font, this->renderer, 'l');
     renderProgressBar(SCOREBOARD_X+60, SCOREBOARD_Y+SCOREBOARD_BET, 200, 30, health, PLAYER_HP_MAX, fgColor, bgColor, this->renderer);
 
-    fgColor = myBLUE;
+    fgColor = myBLUE2;
     bgColor  = myGREY;
     renderText("NP " , SCOREBOARD_X, SCOREBOARD_Y+2*SCOREBOARD_BET, myWHITE, font, this->renderer, 'l');
     renderProgressBar(SCOREBOARD_X+60, SCOREBOARD_Y+2*SCOREBOARD_BET, 200, 30, np, PLAYER_NP_MAX, fgColor, bgColor, this->renderer);
@@ -267,14 +292,19 @@ int GameRecorder::loadScore() {
     return score;
 }
 
+
 MusicPlayer::MusicPlayer(const std::vector<std::string>& paths) {
     this->musicMenu = Mix_LoadMUS(paths[0].c_str());
     this->musicPlayground = Mix_LoadMUS(paths[1].c_str());
     this->musicGameOver = Mix_LoadMUS(paths[2].c_str());
+    this->musicPlayground2 = Mix_LoadMUS(paths[3].c_str());
     if ( musicMenu== nullptr) {
         std::cerr << "Failed to load background music! SDL_mixer Error: " << Mix_GetError() << std::endl;
     }
     if ( musicPlayground== nullptr) {
+        std::cerr << "Failed to load background music! SDL_mixer Error: " << Mix_GetError() << std::endl;
+    }
+    if ( musicGameOver== nullptr) {
         std::cerr << "Failed to load background music! SDL_mixer Error: " << Mix_GetError() << std::endl;
     }
     if ( musicGameOver== nullptr) {
@@ -286,8 +316,12 @@ void MusicPlayer::playMenu() {
     Mix_PlayMusic(this->musicMenu, -1);
 }
 
-void MusicPlayer::playGamining() {
-    Mix_PlayMusic(this->musicPlayground, -1);
+void MusicPlayer::playGamining(int type) {
+    if (type == 1) {
+        Mix_PlayMusic(this->musicPlayground, -1);
+    }else if (type == 2) {
+        Mix_PlayMusic(this->musicPlayground2, -1);
+    }
 }
 
 void MusicPlayer::playGameOver() {

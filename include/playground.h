@@ -23,6 +23,7 @@ class playground { // 遊戲介面 class
     int enemyNUM = 0;
     int chbgX = -300;
     int gameStart = false;
+    int gametype = 1;
     public:
     SDL_Texture *background = nullptr;
     SDL_Texture *backgroundMove = nullptr;
@@ -39,10 +40,10 @@ class playground { // 遊戲介面 class
     void render(SDL_Renderer *renderer);
     void movebd(float deltatime);// 移動背景
     void bdrender();
-    void new_Enemy();
-    void bullet_update(float deltatime);
-    void enemy_update(float deltatime);
-    int gameOVER_ANIME();
+    virtual void new_Enemy();
+    virtual void bullet_update(float deltatime);
+    virtual void enemy_update(float deltatime);
+    virtual int gameOVER_ANIME();
     int gameSTOP();
     void changebd();
     playground(std::string path,std::string pathMove, SDL_Renderer* renderer, GameRecorder *recorder, MusicPlayer *music_player);
@@ -53,7 +54,7 @@ class playground { // 遊戲介面 class
 class playground2:public playground {
 public:
     playground2(std::string path,std::string pathMove, SDL_Renderer* renderer, GameRecorder *recorder, MusicPlayer *music_player);
-
+    void new_Enemy();
 };
 
 

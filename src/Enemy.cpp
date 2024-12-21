@@ -101,8 +101,7 @@ void Enemy::render(SDL_Renderer *renderer) {
     // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     // SDL_RenderFillRect(renderer, rect);
     if(!destroyed) {
-        renderProgressBar(x, y-15, width, 13
-            , hp, hpMAX, myRED, myGREY, renderer);
+        renderProgressBar(x, y-15, width, 13, hp, hpMAX, myRED, myGREY, renderer);
     }
 
 }
@@ -113,18 +112,19 @@ int Enemy::getAttack() {
 
 
 void Enemy::destroy() {
+    // animD->playSound(3);
     // SDL_Log("Enemy::destroy");
 }
 //
 
 Monster::Monster(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):Enemy(posx, posy, speed, Hp, renderer) {
-    Wimages = PLAYER_WALK_IMAGES;
+    Wimages = MONSTER_IMAGES;
     Simages = PLAYER_SHOOT_IMAGES;
-    Dimages = PLAYER_DIED_IMAGES;
+    Dimages = EXPLODE_IMAGES;
     rectRATE = 0.7;
     animW = new Animation('w', 80, this->Wimages, renderer);
     animS = new Animation('s', 50, this->Simages, renderer);
-    animD = new Animation('D', 30, this->Dimages, renderer);
+    animD = new Animation('D', 30, this->Dimages, renderer, BOMB_SOUND);
 }
 
 
@@ -133,8 +133,51 @@ Human::Human(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer
     Simages = PLAYER_SHOOT_IMAGES;
     Dimages = EXPLODE_IMAGES;
     rectRATE = 0.7;
-    animW = new Animation('w', 80, this->Wimages, renderer);
+    animW = new Animation('w', 80, this->Wimages, renderer, GIRL_SOUND);
     animS = new Animation('s', 50, this->Simages, renderer);
-    animD = new Animation('D', 30, this->Dimages, renderer);
+    animD = new Animation('D', 30, this->Dimages, renderer, BOMB_SOUND);
+}
+
+Human1::Human1(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):Enemy(posx, posy, speed, Hp, renderer) {
+    Wimages = HUMAN1_IMAGES;
+    Simages = PLAYER_SHOOT_IMAGES;
+    Dimages = EXPLODE_IMAGES;
+    rectRATE = 0.7;
+    animW = new Animation('w', 60, this->Wimages, renderer, CLASSMATE_SOUND);
+    animS = new Animation('s', 50, this->Simages, renderer);
+    animD = new Animation('D', 30, this->Dimages, renderer, BOMB_SOUND);
+}
+
+
+Human2::Human2(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):Enemy(posx, posy, speed, Hp, renderer) {
+    Wimages = HUMAN2_IMAGES;
+    Simages = PLAYER_SHOOT_IMAGES;
+    Dimages = EXPLODE_IMAGES;
+    rectRATE = 0.7;
+    animW = new Animation('w', 50, this->Wimages, renderer, CLASSMATE_SOUND);
+    animS = new Animation('s', 50, this->Simages, renderer);
+    animD = new Animation('D', 30, this->Dimages, renderer, BOMB_SOUND);
+}
+
+
+Human3::Human3(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):Enemy(posx, posy, speed, Hp, renderer) {
+    Wimages = HUMAN3_IMAGES;
+    Simages = PLAYER_SHOOT_IMAGES;
+    Dimages = EXPLODE_IMAGES;
+    rectRATE = 0.7;
+    animW = new Animation('w', 30, this->Wimages, renderer, CLASSMATE_SOUND);
+    animS = new Animation('s', 50, this->Simages, renderer);
+    animD = new Animation('D', 30, this->Dimages, renderer, BOMB_SOUND);
+}
+
+Shake::Shake(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):Enemy(posx, posy, speed, Hp, renderer) {
+    Wimages = PLAYER_WALK_IMAGES;
+    Simages = PLAYER_SHOOT_IMAGES;
+    Dimages = EXPLODE_IMAGES;
+    rectRATE = 0.7;
+    speed = 0;
+    animW = new Animation('w', 40, this->Wimages, renderer);
+    animS = new Animation('s', 50, this->Simages, renderer);
+    animD = new Animation('D', 30, this->Dimages, renderer, BOMB_SOUND);
 }
 
