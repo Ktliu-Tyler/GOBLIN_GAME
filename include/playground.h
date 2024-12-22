@@ -13,18 +13,16 @@
 #include <random>
 
 #define PLAYGROUND_H
-#endif //MENU_H
 
 
 class playground { // 遊戲介面 class
-    protected:
+protected:
     float backgroundX;
     int timecounter = 0;
     int enemyNUM = 0;
     int chbgX = -300;
     int gameStart = false;
     int gametype = 1;
-    public:
     SDL_Texture *background = nullptr;
     SDL_Texture *backgroundMove = nullptr;
     SDL_Texture *backgroundChange = nullptr;
@@ -35,6 +33,7 @@ class playground { // 遊戲介面 class
     Scoreboard *scoreboard;
     std::vector<Bullet *> bullets;
     std::vector<Enemy *> enemys;
+public:
     int update(float deltatime);
     int process_input(SDL_Event *event, const Uint8* keystate);
     void render(SDL_Renderer *renderer);
@@ -58,4 +57,5 @@ public:
 };
 
 
+#endif
 

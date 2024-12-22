@@ -205,9 +205,10 @@ void playground::enemy_update(float deltatime) {
                 scoreboard->getLevel(enemy->getAttack());
                 enemy->animD->finish = false;
                 enemy->state = 'D';
+                musicPlayer->playBomb();
                 enemy->speed = BDSPEED;
                 enemy->dieANIMcount++;
-                enemy->animD->playSound(7);
+
             }
             if(enemy->animD->finish) {
                 delete enemy;
@@ -322,7 +323,6 @@ int playground::gameSTOP() {
 playground::~playground() {
     delete this;
 }
-
 
 
 

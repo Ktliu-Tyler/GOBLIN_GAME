@@ -115,9 +115,12 @@ public:
     Mix_Music *musicPlayground = nullptr;
     Mix_Music *musicPlayground2 = nullptr;
     Mix_Music *musicGameOver = nullptr;
+    Mix_Chunk *bombsound = nullptr;
+
     void playMenu();
     void playGamining(int type=1);
     void playGameOver();
+    void playBomb();
     void stop();
     ~MusicPlayer();
 };

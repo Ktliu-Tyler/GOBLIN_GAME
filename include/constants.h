@@ -45,6 +45,7 @@
 #define PLAYGROUNDBGM2 "../musics/GAMEOVER.mp3"
 #define GAMEOVERBGM "../musics/BGM2.mp3"
 
+#define SHOOT_SOUND "../musics/goblin/shoot.wav"
 #define SHOOT1_SOUND "../musics/goblin/shoot1.wav"
 #define WALK_SOUND "../musics/goblin/walk.wav"
 #define HURT_SOUND "../musics/goblin/hurt.wav"

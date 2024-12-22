@@ -298,6 +298,7 @@ MusicPlayer::MusicPlayer(const std::vector<std::string>& paths) {
     this->musicPlayground = Mix_LoadMUS(paths[1].c_str());
     this->musicGameOver = Mix_LoadMUS(paths[2].c_str());
     this->musicPlayground2 = Mix_LoadMUS(paths[3].c_str());
+    this->bombsound = Mix_LoadWAV(BOMB_SOUND);
     if ( musicMenu== nullptr) {
         std::cerr << "Failed to load background music! SDL_mixer Error: " << Mix_GetError() << std::endl;
     }
@@ -310,11 +311,19 @@ MusicPlayer::MusicPlayer(const std::vector<std::string>& paths) {
     if ( musicGameOver== nullptr) {
         std::cerr << "Failed to load background music! SDL_mixer Error: " << Mix_GetError() << std::endl;
     }
+    if (bombsound == nullptr) {
+        std::cerr << "Failed to load bomb sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
+    }
 }
 
 void MusicPlayer::playMenu() {
     Mix_PlayMusic(this->musicMenu, -1);
 }
+
+void MusicPlayer::playBomb() {
+    Mix_PlayChannel(8, this->bombsound, 0);
+}
+
 
 void MusicPlayer::playGamining(int type) {
     if (type == 1) {
