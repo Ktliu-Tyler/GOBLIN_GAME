@@ -9,19 +9,21 @@ SDL_Renderer *renderer = nullptr;
 SDL_Texture *background = nullptr;
 
 
-GameRecorder *game_recorder = nullptr;
-menu *MenuPage = nullptr;
-playground *PlayPage = nullptr;
-MusicPlayer *BGMmusic = nullptr;
+static GameRecorder *game_recorder = nullptr;
+static menu *MenuPage = nullptr;
+static playground *PlayPage = nullptr;
+static MusicPlayer *BGMmusic = nullptr;
 
-std::vector<std::string> playbg = PLAYGROUND_BACKGROUND;
-std::vector<std::string> playbgMove = PLAYGROUND_BACKGROUND_MOVE;
+const std::vector<std::string> playbg = PLAYGROUND_BACKGROUND;
+const std::vector<std::string> playbgMove = PLAYGROUND_BACKGROUND_MOVE;
 const Uint8* keystate = (SDL_GetKeyboardState(NULL));
-int PAGE_ID = 0;
-int gametype = 1;
-int prePage_ID = 0;
-int last_frame_time = 0;
-float delta_time = 0;
+
+static int  PAGE_ID = 0;
+static int gametype = 1;
+
+static int prePage_ID = 0;
+static int last_frame_time = 0;
+static float delta_time = 0;
 
 int initialize_window() {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -146,6 +148,7 @@ void change_page() {
 
 void destroy_window() {
     SDL_Log("Engine TURN OFF!");
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(mywindow);
     Mix_Quit();

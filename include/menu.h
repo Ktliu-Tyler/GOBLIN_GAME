@@ -21,7 +21,6 @@ class menu {// Menu class
     MusicPlayer *musicPlayer = nullptr;
     Animation *anim = nullptr;
     std::vector<std::string> BGimages = MENU_ANIME;
-    // Player *player = nullptr;
     bool startMenu =false;
     int update(float deltatime);
     int process_input(SDL_Event *event);

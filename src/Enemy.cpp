@@ -5,7 +5,7 @@
 #include "../include/Enemy.h"
 
 
-Enemy::Enemy(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer) {
+Enemy::Enemy(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):hBar(Hp, width, height, renderer) {
     this->hp = Hp;
     this->hpMAX = Hp;
     this->speed = BDSPEED-speed;
@@ -53,13 +53,7 @@ int Enemy::ifdied() {
     if(hp <= 0) {
         hp = 0;
         state = 'D';
-        // SDL_Log("die1");
-        // if(destroyed==false) {
-        //     animD->finish = false;
-        // }
-        // if(animD->finish) {
-        //     animD->stop = true;
-        // }
+
         destroyed = true;
         return 1;
     }
@@ -74,12 +68,16 @@ void Enemy::render(SDL_Renderer *renderer) {
     if(destroyed) {
         destroy();
     }
+    delete this->rect;
+    this->rect = nullptr;
     rect = new SDL_Rect {
         (int) x,
         (int) y,
         (int) width,
         (int) height
     };
+    delete this->hitrect;
+    this->hitrect = nullptr;
     this->hitrect = new SDL_Rect {
         (int) (x+width*(1-rectRATE)/2),
         (int) (y+height*(1-rectRATE)/2),
@@ -98,11 +96,11 @@ void Enemy::render(SDL_Renderer *renderer) {
         animD->update(renderer, rect);
     }
 
-    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    // SDL_RenderFillRect(renderer, rect);
+
     if(!destroyed) {
-        renderProgressBar(x, y-15, width, 13, hp, hpMAX, myRED, myGREY, renderer);
+        hBar.render(x, y, width, hp, renderer);
     }
+
 
 }
 
@@ -114,6 +112,29 @@ int Enemy::getAttack() {
 void Enemy::destroy() {
     // animD->playSound(3);
     // SDL_Log("Enemy::destroy");
+}
+
+Enemy::~Enemy() {
+    if (animW) {
+        delete animW;
+        animW = nullptr;
+    }
+    if (animS) {
+        delete animS;
+        animS = nullptr;
+    }
+    if (animD) {
+        delete animD;
+        animD = nullptr;
+    }
+    if (rect) {
+        delete rect;
+        rect = nullptr;
+    }
+    if (hitrect) {
+        delete hitrect;
+        hitrect = nullptr;
+    }
 }
 //
 

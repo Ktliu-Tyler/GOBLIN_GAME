@@ -1,0 +1,3 @@
+C:/Users/Liu KT/Documents/CLIon/Goblin_game2/cmake-build-release/CMakeFiles/Goblin_game.dir
+C:/Users/Liu KT/Documents/CLIon/Goblin_game2/cmake-build-release/CMakeFiles/edit_cache.dir
+C:/Users/Liu KT/Documents/CLIon/Goblin_game2/cmake-build-release/CMakeFiles/rebuild_cache.dir

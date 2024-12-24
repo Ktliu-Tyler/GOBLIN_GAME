@@ -1,0 +1,23 @@
+# ninja log v6
+2	1267	7565651336709588	CMakeFiles/Goblin_game.dir/main.cpp.obj	ca0541050cb9b77b
+16	1615	7565651336856095	CMakeFiles/Goblin_game.dir/src/playground.cpp.obj	d8f6cba783f12b44
+19	1317	7565651336876070	CMakeFiles/Goblin_game.dir/src/Player.cpp.obj	74311ce204a976f6
+14	1344	7565651336826073	CMakeFiles/Goblin_game.dir/src/menu.cpp.obj	2da9d1ffad1d173e
+8	1513	7565651336779430	CMakeFiles/Goblin_game.dir/src/engine.cpp.obj	cd6423f9d34c1095
+6	1713	7565651336749710	CMakeFiles/Goblin_game.dir/SDL_lib/SDL_bgi.cpp.obj	f32f1acee2d6c0ce
+11	1514	7565651336806032	CMakeFiles/Goblin_game.dir/src/tool.cpp.obj	1ec1f910b10f8f73
+22	1684	7565651336911233	CMakeFiles/Goblin_game.dir/src/Enemy.cpp.obj	f4c6e7e87bafe970
+88	196	7565670282488670	Goblin_game.exe	e66d73b38c6572e
+7	88	7565670281680708	CMakeFiles/Goblin_game.dir/icon.rc.obj	460cd78f8114a47a
+18	1441	7565770382378923	CMakeFiles/Goblin_game.dir/src/tool.cpp.obj	1ec1f910b10f8f73
+1441	1634	7565770396608132	Goblin_game.exe	e66d73b38c6572e
+19	1011	7565771206483120	CMakeFiles/Goblin_game.dir/src/tool.cpp.obj	1ec1f910b10f8f73
+1012	1094	7565771216400373	Goblin_game.exe	e66d73b38c6572e
+27	1186	7565772242524457	CMakeFiles/Goblin_game.dir/src/menu.cpp.obj	2da9d1ffad1d173e
+18	1281	7565772242434418	CMakeFiles/Goblin_game.dir/main.cpp.obj	ca0541050cb9b77b
+32	1326	7565772242578623	CMakeFiles/Goblin_game.dir/src/Player.cpp.obj	74311ce204a976f6
+21	1394	7565772242468503	CMakeFiles/Goblin_game.dir/src/engine.cpp.obj	cd6423f9d34c1095
+24	1427	7565772242496966	CMakeFiles/Goblin_game.dir/src/tool.cpp.obj	1ec1f910b10f8f73
+30	1579	7565772242552068	CMakeFiles/Goblin_game.dir/src/playground.cpp.obj	d8f6cba783f12b44
+35	1724	7565772242611575	CMakeFiles/Goblin_game.dir/src/Enemy.cpp.obj	f4c6e7e87bafe970
+1724	1810	7565772259495694	Goblin_game.exe	e66d73b38c6572e

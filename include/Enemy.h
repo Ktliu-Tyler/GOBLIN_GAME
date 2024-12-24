@@ -11,9 +11,9 @@
 
 class Enemy {
 public:
+    friend class playground;
     Enemy(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer);
-    SDL_Rect *rect;
-    SDL_Rect *hitrect;
+    ~Enemy();
     void init(float x, float y, float speed, int Hp);
     void render(SDL_Renderer* renderer);
     void kinetic(float dt);
@@ -21,25 +21,30 @@ public:
     void hurted(int att);
     int ifdied();
     int getAttack();
+protected:
     std::vector<std::string> Wimages = ENEMY1_IMAGES;
     std::vector<std::string> Simages = ENEMY1_DIE;
     std::vector<std::string> Dimages = ENEMY1_DIE;
     Animation* animW = nullptr;
     Animation* animS = nullptr;
     Animation* animD = nullptr;
+    healthBar hBar;
+    float rectRATE = 0.6;
+    char type = 'E';
     float x, y;
+private:
+    SDL_Rect *rect;
+    SDL_Rect *hitrect;
     bool destroyed = false;
     bool attacked = false;
     char state = 'W';
     int dieANIMcount = 0;
     float speed=BDSPEED;
-    float rectRATE = 0.6;
-    char type = 'E';
-protected:
     int hpMAX = 10;
     int hp = 1;
     float width=100, height=100;
 };
+
 
 
 class Monster: public Enemy {
@@ -71,3 +76,4 @@ class Shake: public Enemy {
 public:
     Shake(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer);
 };
+

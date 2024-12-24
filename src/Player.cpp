@@ -55,11 +55,6 @@ void Player::render( SDL_Renderer* renderer) {
     }else if (state == 'D') {
         animD->update(renderer, rect);
     }
-
-    // std::cout << x <<" "<< y << std::endl;
-    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-    // SDL_RenderFillRect(renderer, rect);
 }
 
 void Player::move(char dir) {
@@ -90,6 +85,32 @@ void Player::changeArrow(char type) {
         animS->updateTime = PLAYER_SHOOT_T;
     }
     SDL_Log("Changing arrow state to %c", type);
+}
+
+Player::~Player() {
+    // 1) 釋放三個動畫指標
+    if (animW) {
+        delete animW;
+        animW = nullptr;
+    }
+    if (animS) {
+        delete animS;
+        animS = nullptr;
+    }
+    if (animD) {
+        delete animD;
+        animD = nullptr;
+    }
+
+    // 2) 釋放 rect、hitrect
+    if (rect) {
+        delete rect;
+        rect = nullptr;
+    }
+    if (hitrect) {
+        delete hitrect;
+        hitrect = nullptr;
+    }
 }
 
 
@@ -128,16 +149,6 @@ void Bullet::render(SDL_Renderer* renderer) {
         (int) height
     };
     anim->update(renderer, rect);
-    // for (Animation* anim : anims) {
-    //     if (type == anim->id) {
-    //         anim->update(renderer, rect);
-    //         break;
-    //     }
-    // }
-
-
-    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    // SDL_RenderFillRect(renderer, rect);
 }
 
 void Bullet::set_arrow(char t,  SDL_Renderer* renderer) {
@@ -152,14 +163,14 @@ void Bullet::set_arrow(char t,  SDL_Renderer* renderer) {
         break;
         case 'p':
             att = 3;
-            np = 2;
+            np = 3;
             anim = new Animation(t, 100, this->PNimages, renderer);
         break;
         case 'P':
             width = 2*width;
             height = 2*height;
             att = 6;
-            np = 3;
+            np = 6;
 
             anim = new Animation(t, 100, this->PRimages, renderer);
         break;
@@ -171,6 +182,19 @@ void Bullet::destroy() {
     // SDL_Log("Bullet::destroy");
 }
 
+Bullet::~Bullet() {
+    // 1) 釋放 anim
+    if (anim) {
+        delete anim;
+        anim = nullptr;
+    }
+
+    // 2) 釋放 rect
+    if (rect) {
+        delete rect;
+        rect = nullptr;
+    }
+}
 
 
 

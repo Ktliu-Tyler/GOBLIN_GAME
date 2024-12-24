@@ -77,5 +77,23 @@ void menu::render(SDL_Renderer *renderer) {
 
 
 menu::~menu() {
+    if (anim) {
+        delete anim;
+        anim = nullptr;
+    }
+
+    // 2) 釋放 background 貼圖
+    if (background) {
+        SDL_DestroyTexture(background);
+        background = nullptr;
+    }
+
+    // 3) 關閉字型 fontMENU
+    if (fontMENU) {
+        TTF_CloseFont(fontMENU);
+        fontMENU = nullptr;
+    }
+
+
     delete this;
 }

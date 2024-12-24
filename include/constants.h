@@ -14,16 +14,21 @@
 #define SCOREBOARD_Y 10
 #define SCOREBOARD_BET 50
 
-#define FPS (16 * 60)//幀率 目前還沒寫好
+#define FPS (16 * 60)
 #define FRAME_TARGET_TIME (1000 / FPS)
 
 #define PLAYER_W 100 //玩家大小
 #define PLAYER_h 100 //玩家大小
-#define PLAYER_HIT_W 80 //玩家碰撞大小
-#define PLAYER_HIT_H 80 //玩家碰撞大小
+// #define PLAYER_HIT_W 80 玩家碰撞大小
+const int PLAYER_HIT_W =  80;
+// #define PLAYER_HIT_H 80 玩家碰撞大小
+const int PLAYER_HIT_H =  80;
+
+// #define ENEMY_HIT_RATE 0.8
+const float ENEMY_HIT_RATE =  0.8;
+
 
 #define PLAYER_SHOOT_T 30
-#define ENEMY_HIT_RATE 0.8
 #define PLAYER_HP_MAX 20
 #define PLAYER_NP_MAX 40
 #define LEVEL_MAX 50
@@ -63,7 +68,6 @@
 #define ARROW_POISON {"../imgs/arrow/poisonarrow.png"}
 #define ARROW_POWER {"../imgs/arrow/powerarrow.png"}
 
-
 #define ENEMY1_IMAGES {"../imgs/enemy1/Bat1.png","../imgs/enemy1/Bat2.png","../imgs/enemy1/Bat3.png","../imgs/enemy1/Bat4.png","../imgs/enemy1/Bat5.png","../imgs/enemy1/Bat6.png","../imgs/enemy1/Bat7.png","../imgs/enemy1/Bat8.png"}
 #define ENEMY1_DIE {"../imgs/enemy1/Bat-Die.png","../imgs/enemy1/Bat-Die2.png","../imgs/enemy1/Bat-Die3.png","../imgs/enemy1/Bat-Die4.png","../imgs/enemy1/Bat-Die5.png","../imgs/enemy1/Bat-Die6.png","../imgs/enemy1/Bat-Die7.png","../imgs/enemy1/Bat-Die8.png","../imgs/enemy1/Bat-Die.png","../imgs/enemy1/Bat-Die9.png"}
 
@@ -75,8 +79,6 @@
 
 #define EXPLODE_IMAGES {"../imgs/explode/Bomb0.png","../imgs/explode/Bomb1.png","../imgs/explode/Bomb2.png","../imgs/explode/Bomb3.png","../imgs/explode/Bomb6.png","../imgs/explode/Bomb7.png","../imgs/explode/Bomb8.png","../imgs/explode/Bomb9.png","../imgs/explode/Bomb10.png","../imgs/explode/Bomb11.png","../imgs/explode/Bomb12.png","../imgs/explode/Bomb13.png","../imgs/explode/Bomb14.png","../imgs/explode/Bomb15.png","../imgs/explode/Bomb16.png","../imgs/explode/Bomb17.png","../imgs/explode/Bomb18.png","../imgs/explode/Bomb19.png","../imgs/explode/Bomb20.png","../imgs/explode/Bomb21.png","../imgs/explode/Bomb22.png","../imgs/explode/Bomb23.png","../imgs/explode/Bomb24.png","../imgs/explode/Bomb25.png","../imgs/explode/Bomb26.png"}
 #define SKAKE_HEAD {"../imgs/shakeing/ryo-0_0.png","../imgs/shakeing/ryo-1_0.png","../imgs/shakeing/ryo-2_0.png","../imgs/shakeing/ryo-3_0.png"}
-
-
 
 #define STOP_PIC "../imgs/stop.png"
 #define CHANGE_BACKGROUND "../imgs/backgrounds/bg_change.png"

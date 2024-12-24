@@ -12,7 +12,7 @@ inline TTF_Font* font;
 inline TTF_Font* fontBIG;
 
 
-playground::playground(std::string path, std::string pathMove, SDL_Renderer *renderer, GameRecorder *recorder, MusicPlayer *music_player) {
+playground::playground(std::string path, std::string pathMove, SDL_Renderer *renderer, GameRecorder *recorder, MusicPlayer *music_player): scoreboard(renderer, font) {
     SDL_Log("Creating playground...");
     this -> background = loadTexture(path, renderer);
     this -> backgroundMove = loadTexture(pathMove, renderer);
@@ -27,18 +27,18 @@ playground::playground(std::string path, std::string pathMove, SDL_Renderer *ren
     fontBIG =  TTF_OpenFont(FONT, 100);
     this->musicPlayer->stop();
     player = new Player(PLAYER_W+30, WINDOW_HEIGHT-WINDOW_M_HEIGHT, PLAYER_W, PLAYER_h, PLAYER_SPEED, renderer, WINDOW_HEIGHT,WINDOW_HEIGHT-WINDOW_M_HEIGHT);
-    scoreboard = new Scoreboard(renderer, font);
-    scoreboard->setHealth(PLAYER_HP_MAX);
-    scoreboard->setNP(PLAYER_NP_MAX);
-    scoreboard->setScore(0);
-    scoreboard->setLevel(0);
+    // scoreboard = Scoreboard(renderer, font);
+    scoreboard.setHealth(PLAYER_HP_MAX);
+    scoreboard.setNP(PLAYER_NP_MAX);
+    scoreboard.setScore(0);
+    scoreboard.setLevel(0);
 }
 
 
 int playground::process_input(SDL_Event *event, const Uint8 *keystate) {
     // SDL_Log("Processing input...%d", keystate[SDL_SCANCODE_UP]);
     int ifmove = FALSE;
-    if( !scoreboard->game_over) {
+    if( !scoreboard.game_over) {
         if (keystate[SDL_SCANCODE_W]) {
             // SDL_Log("SDL_w");
             player->move('u');
@@ -60,27 +60,27 @@ int playground::process_input(SDL_Event *event, const Uint8 *keystate) {
                 // SDL_Log("SDL_q");
                 // return MENUID;
             }
-            if (event->key.keysym.sym == SDLK_1 && !scoreboard->game_over) {
+            if (event->key.keysym.sym == SDLK_1 && !scoreboard.game_over) {
                 player->changeArrow('N');
             }
-            if (event->key.keysym.sym == SDLK_2&& !scoreboard->game_over) {
+            if (event->key.keysym.sym == SDLK_2&& !scoreboard.game_over) {
                 player->changeArrow('F');
             }
-            if (event->key.keysym.sym == SDLK_3&& !scoreboard->game_over) {
+            if (event->key.keysym.sym == SDLK_3&& !scoreboard.game_over) {
                 player->changeArrow('p');
             }
-            if (event->key.keysym.sym == SDLK_4&& !scoreboard->game_over) {
+            if (event->key.keysym.sym == SDLK_4&& !scoreboard.game_over) {
                 player->changeArrow('P');
             }
-            if(event->key.keysym.sym == SDLK_SPACE && player->animS->finish&& !scoreboard->game_over) {
+            if(event->key.keysym.sym == SDLK_SPACE && player->animS->finish&& !scoreboard.game_over) {
                 // SDL_Log("SDL_space");
                 player->state = 'S';
                 player->animS->init();
 
                 Bullet *b = new Bullet(player->x+player->width/2, player->y+player->height/2, player->type, renderer);
-                if (scoreboard->NP()-b->np >0 || player->type == 'N') {
+                if (scoreboard.NP()-b->np >0 || player->type == 'N') {
                     player->animS->playSound(2);
-                    scoreboard->getNP(-1*b->np);
+                    scoreboard.getNP(-1*b->np);
                     bullets.push_back(b);
                 }
             }
@@ -90,14 +90,14 @@ int playground::process_input(SDL_Event *event, const Uint8 *keystate) {
 }
 
 int playground::update(float deltatime) {
-    if (!scoreboard->game_over && gameStart) {
+    if (!scoreboard.game_over && gameStart) {
         new_Enemy();
     }
     player->kinetic(deltatime);
     enemy_update(deltatime);
     bullet_update(deltatime);
     movebd(deltatime);
-    if(chbgX < -300 && scoreboard->game_over) {
+    if(chbgX < -300 && scoreboard.game_over) {
         return gameOVER_ANIME();
     }
     return PLAYGROUNDID;
@@ -116,9 +116,9 @@ void playground::render(SDL_Renderer *renderer) {
     if(!player->animD->stop) {
         player->render(renderer);
     }
-    scoreboard->render();
-    if(scoreboard->Health() <= 0 && !scoreboard->game_over) {
-        scoreboard->game_over = true;
+    scoreboard.render();
+    if(scoreboard.Health() <= 0 && !scoreboard.game_over) {
+        scoreboard.game_over = true;
         player->state = 'D';
         player->animD->finish = false;
         musicPlayer->playGameOver();
@@ -131,7 +131,7 @@ void playground::render(SDL_Renderer *renderer) {
             chbgX = WINDOW_WIDTH;
         }
     }
-    if(scoreboard->game_over && player->animD->finish) {
+    if(scoreboard.game_over && player->animD->finish) {
         player->animD->stop = true;
         changebd();
 
@@ -143,7 +143,7 @@ void playground::movebd(float dt) {
     if (backgroundX < -WINDOW_WIDTH) {
         backgroundX = 0;
     }
-    if(!scoreboard->game_over) {
+    if(!scoreboard.game_over) {
         backgroundX+=BDSPEED*dt;
     }
     // SDL_Log("Updating background...%f", backgroundX);
@@ -185,12 +185,20 @@ void playground::enemy_update(float deltatime) {
             if(SDL_HasIntersection(bullet->rect, enemy->hitrect)&& !enemy->destroyed) {
                 enemy->hurted(bullet->att);
                 bullet->destroyed = true;
-                scoreboard->getLevel(1);
+                scoreboard.getLevel(1);
                 enemy->animW->playSound(4);
+                if (bullet->type == 'p') {
+                    enemy->speed =BDSPEED+10;
+                    if(enemy->type == 'B') {
+                        enemy->speed = BDSPEED+120;
+                        SDL_Log("slow %d", enemy->speed);
+                    }
+
+                }
             }
         }
         if(SDL_HasIntersection(enemy->hitrect, player->hitrect) && !enemy->attacked && !enemy->destroyed) {
-            scoreboard->getHurt(enemy->getAttack());
+            scoreboard.getHurt(enemy->getAttack());
             enemy->attacked = true;
             player->animD->playSound(5);
             SDL_Log("Hurt");
@@ -200,12 +208,12 @@ void playground::enemy_update(float deltatime) {
         if (enemy->destroyed && enemy->animD->finish) {
             enemy->destroy();
             if(test == 1 && enemy->dieANIMcount == 0) {
-                scoreboard->getScore(enemy->getAttack());
-                scoreboard->getNP(enemy->getAttack()/3+2);
-                scoreboard->getLevel(enemy->getAttack());
+                scoreboard.getScore(enemy->getAttack());
+                scoreboard.getNP(enemy->getAttack()/3+2);
+                scoreboard.getLevel(enemy->getAttack());
                 enemy->animD->finish = false;
                 enemy->state = 'D';
-                musicPlayer->playBomb();
+
                 enemy->speed = BDSPEED;
                 enemy->dieANIMcount++;
 
@@ -214,8 +222,8 @@ void playground::enemy_update(float deltatime) {
                 delete enemy;
                 enemyNUM--;
                 if(enemy->type=='B') {
-                    scoreboard->state = 'n';
-                    scoreboard->setLevel(0);
+                    scoreboard.state = 'n';
+                    scoreboard.setLevel(0);
                     enemyNUM = 0;
                 }
                 it = enemys.erase(it);
@@ -229,7 +237,7 @@ void playground::enemy_update(float deltatime) {
 
 void playground::new_Enemy() {
     int n = ENEMYNUMMAX-enemyNUM;
-    if (scoreboard->state == 'n') {
+    if (scoreboard.state == 'n') {
         for (int i = 0; i < n; i++) {
             int enemyType = rand()%ENEMPTYPE;
             int hp = rand()%6+3;
@@ -247,12 +255,12 @@ void playground::new_Enemy() {
             // SDL_Log("Enemy born at %f, %f", enemys[i]->x, enemys[i]->y);
             enemyNUM++;
         }
-    }else  if (scoreboard->state == 'g'){
-        Monster *e = new Monster(rand()%WINDOW_WIDTH+WINDOW_WIDTH, WINDOW_HEIGHT/4, -100, 30, renderer);
+    }else  if (scoreboard.state == 'g'){
+        Monster *e = new Monster(rand()%WINDOW_WIDTH+WINDOW_WIDTH, WINDOW_HEIGHT/4+30, -100, 30, renderer);
         e->type = 'B';
         enemys.push_back(e);
         enemyNUM = 0;
-        scoreboard->state = 'B';
+        scoreboard.state = 'B';
     }
 
 
@@ -261,7 +269,7 @@ void playground::new_Enemy() {
 int playground::gameOVER_ANIME() {
     int animeEnd = false;
     // Shake s1(WINDOW_WIDTH/2-100,WINDOW_HEIGHT/2,0, 10, renderer);
-    recorder->saveScore(scoreboard->Score());
+    recorder->saveScore(scoreboard.Score());
     int PageID = 0;
     while (!animeEnd) {
         SDL_Event event;
@@ -292,7 +300,7 @@ int playground::gameOVER_ANIME() {
 
 int playground::gameSTOP() {
     int animeEnd = false;
-    recorder->saveScore(scoreboard->Score());
+    recorder->saveScore(scoreboard.Score());
     int PageID = 0;
     while (!animeEnd) {
         SDL_Event event;
@@ -321,6 +329,55 @@ int playground::gameSTOP() {
 }
 
 playground::~playground() {
+    // 先清理 bullets
+    for (auto& bullet : bullets) {
+        if (bullet) {
+            bullet->destroy();
+            delete bullet;    // 釋放記憶體
+            bullet = nullptr;
+        }
+    }
+    bullets.clear();
+
+    // 再清理 enemys
+    for (auto& enemy : enemys) {
+        if (enemy) {
+            enemy->destroy();
+            delete enemy;    // 釋放記憶體
+            enemy = nullptr;
+        }
+    }
+    enemys.clear();
+
+    // 刪除玩家
+    if (player) {
+        delete player;
+        player = nullptr;
+    }
+
+    // 釋放背景貼圖（若非空）
+    if (background) {
+        SDL_DestroyTexture(background);
+        background = nullptr;
+    }
+    if (backgroundMove) {
+        SDL_DestroyTexture(backgroundMove);
+        backgroundMove = nullptr;
+    }
+    if (backgroundChange) {
+        SDL_DestroyTexture(backgroundChange);
+        backgroundChange = nullptr;
+    }
+
+    // 6) 關閉字型（若非空）
+    if (fontBIG) {
+        TTF_CloseFont(fontBIG);
+        fontBIG = nullptr;
+    }
+    if (font) {
+        TTF_CloseFont(font);
+        font = nullptr;
+    }
     delete this;
 }
 
@@ -333,7 +390,8 @@ playground2::playground2(std::string path, std::string pathMove, SDL_Renderer *r
 }
 
 void playground2::new_Enemy() {
-    int n = ENEMYNUMMAX-enemyNUM;
+    static int n = ENEMYNUMMAX;
+    n = ENEMYNUMMAX-enemyNUM;
     for (int i = 0; i < n; i++) {
         int enemyType = rand()%ENEMPTYPE;
         int hp = rand()%10+1;

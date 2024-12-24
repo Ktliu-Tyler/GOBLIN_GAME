@@ -30,13 +30,14 @@ inline SDL_Color myBLUE2 = { 51, 255, 251, 255 };
 SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer);// 載入圖片
 
 class Animation {
+private:
     std::vector<SDL_Texture*> frames;
     int currentFrameIndex = 0;
     int frameMax = 0;
     int timeCounter = 0;
     Mix_Chunk* sound = nullptr;
     void addAnimationFrame(const std::string& path, SDL_Renderer* renderer);
-    public:
+public:
     bool stop = false;
     int updateTime = 0;
     int finish = false;
@@ -51,10 +52,10 @@ class Animation {
 
 
 class Scoreboard {
+    friend class playground;
 public:
     Scoreboard(SDL_Renderer* renderer, TTF_Font* font);
     ~Scoreboard();
-
     void setScore(int score);
     void setHealth(int health);
     void setLevel(int level);
@@ -67,22 +68,17 @@ public:
     int Health();
     int NP();
     void render();
-    int game_over = false;
-    int state = 'n';
 
 private:
+    int game_over = false;
+    int state = 'n';
     SDL_Renderer* renderer;
     TTF_Font* font;
-
     int score;
     int health;
     int level = 0;
     int np;
-
-    // void renderProgressBar(int x, int y, int w, int h, int value, int max_value, SDL_Color fgColor, SDL_Color bgColor);
-
     void updateTextures();
-
     SDL_Texture* scoreTexture;
     SDL_Texture* healthTexture;
     SDL_Texture* levelTexture;
@@ -111,18 +107,28 @@ private:
 class MusicPlayer {
 public:
     MusicPlayer(const std::vector<std::string>& Paths);
-    Mix_Music *musicMenu = nullptr;
-    Mix_Music *musicPlayground = nullptr;
-    Mix_Music *musicPlayground2 = nullptr;
-    Mix_Music *musicGameOver = nullptr;
-    Mix_Chunk *bombsound = nullptr;
-
     void playMenu();
     void playGamining(int type=1);
     void playGameOver();
     void playBomb();
     void stop();
     ~MusicPlayer();
+private:
+    Mix_Music *musicMenu = nullptr;
+    Mix_Music *musicPlayground = nullptr;
+    Mix_Music *musicPlayground2 = nullptr;
+    Mix_Music *musicGameOver = nullptr;
+    Mix_Chunk *bombsound = nullptr;
+};
+
+class healthBar {
+public:
+    healthBar(int max_hp,int w, int h, SDL_Renderer* renderer);
+    void render(int x, int y,int width,  int health, SDL_Renderer* renderer);
+private:
+    int width, height;
+    int max_health;
+    SDL_Renderer *renderer;
 };
 
 void renderProgressBar(int x, int y, int w, int h, int value, int max_value, SDL_Color fgColor, SDL_Color bgColor, SDL_Renderer *renderer);

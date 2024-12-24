@@ -3,18 +3,6 @@
 //
 #include "../include/tool.h"
 
-// #include "../include/engine.h"
-
-// SDL_Color WHITE = { 255, 255, 255, 255 };
-// SDL_Color BLACK = { 0, 0, 0, 255 };
-// SDL_Color RED = { 255, 0, 0, 255 };
-// SDL_Color GREEN = { 0, 255, 0, 255 };
-// SDL_Color BLUE = { 0, 0, 255, 255 };
-// SDL_Color YELLOW = { 255, 255, 0, 255 };
-// SDL_Color MAGENTA = { 255, 0, 255, 255 };
-// SDL_Color CYAN = { 0, 255, 255, 255 };
-// SDL_Color GREY = { 128, 128, 128, 255 };
-
 
 SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer) {
     SDL_Texture* newTexture = nullptr;
@@ -90,6 +78,21 @@ Animation::Animation(char id,int t, const std::vector<std::string>& imagePaths, 
 
 }
 
+Animation::~Animation() {
+    for (auto& frame : frames) {
+        if (frame) {
+            SDL_DestroyTexture(frame);
+            frame = nullptr;
+        }
+    }
+
+    if (sound) {
+        Mix_FreeChunk(sound);
+        sound = nullptr;
+    }
+}
+
+
 void Animation::addAnimationFrame(const std::string &path, SDL_Renderer* renderer) {
     SDL_Texture* frame = loadTexture(path.c_str(), renderer);
     this->frames.push_back(frame);
@@ -104,7 +107,6 @@ SDL_Texture *Animation::getCurrentFrame() {
             currentFrameIndex = 0;
             finish = true;
         }
-        // SDL_Log("SHAKE");
         timeCounter = 0;
 
     }
@@ -115,7 +117,6 @@ bool Animation::update(SDL_Renderer* renderer, SDL_Rect *rect) {
     SDL_RenderCopy(renderer, getCurrentFrame(), nullptr, rect);
     // SDL_Log("SHAKE");
     return 0;
-    // return (this->currentFrameIndex>=this->frameMax-1);
 }
 
 void Animation::init() {
@@ -249,24 +250,29 @@ void Scoreboard::render() {
 
 
 GameRecorder::GameRecorder(const std::string& filename, SDL_Renderer* renderer) : filename(filename), renderer(renderer) {
-    // 构造函数
     highscore = 0;
+    // highscore = loadScore();
     SDL_Log("Highscore load: %d", highscore);
 }
 
+GameRecorder::~GameRecorder() {
+
+}
+
+
 void GameRecorder::saveScore(int score) {
     lastScore = score;
-    if (score > highscore) {
-        highscore = score;
-        // std::ofstream file(filename, std::ios::out | std::ios::trunc);
-        // if (file.is_open()) {
-        //     file << score;
-        //     file.close();
-        //     std::cout << "Score saved to " << filename << std::endl;
-        // } else {
-        //     std::cerr << "Unable to open file for saving score." << std::endl;
-        // }
-    }
+    // if (score > highscore) {
+    //     highscore = score;
+    //     std::ofstream file(filename, std::ios::out | std::ios::trunc);
+    //     if (file.is_open()) {
+    //         file << score;
+    //         file.close();
+    //         std::cout << "Score saved to " << filename << std::endl;
+    //     } else {
+    //         std::cerr << "Unable to open file for saving score." << std::endl;
+    //     }
+    // }
 }
 
 int GameRecorder::LASTSCORE() {
@@ -298,7 +304,6 @@ MusicPlayer::MusicPlayer(const std::vector<std::string>& paths) {
     this->musicPlayground = Mix_LoadMUS(paths[1].c_str());
     this->musicGameOver = Mix_LoadMUS(paths[2].c_str());
     this->musicPlayground2 = Mix_LoadMUS(paths[3].c_str());
-    this->bombsound = Mix_LoadWAV(BOMB_SOUND);
     if ( musicMenu== nullptr) {
         std::cerr << "Failed to load background music! SDL_mixer Error: " << Mix_GetError() << std::endl;
     }
@@ -311,18 +316,12 @@ MusicPlayer::MusicPlayer(const std::vector<std::string>& paths) {
     if ( musicGameOver== nullptr) {
         std::cerr << "Failed to load background music! SDL_mixer Error: " << Mix_GetError() << std::endl;
     }
-    if (bombsound == nullptr) {
-        std::cerr << "Failed to load bomb sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
-    }
 }
 
 void MusicPlayer::playMenu() {
     Mix_PlayMusic(this->musicMenu, -1);
 }
 
-void MusicPlayer::playBomb() {
-    Mix_PlayChannel(8, this->bombsound, 0);
-}
 
 
 void MusicPlayer::playGamining(int type) {
@@ -345,6 +344,39 @@ MusicPlayer::~MusicPlayer() {
     Mix_FreeMusic(this->musicMenu);
     Mix_FreeMusic(this->musicPlayground);
     Mix_FreeMusic(this->musicGameOver);
+    if (musicMenu) {
+        Mix_FreeMusic(musicMenu);
+        musicMenu = nullptr;
+    }
+    if (musicPlayground) {
+        Mix_FreeMusic(musicPlayground);
+        musicPlayground = nullptr;
+    }
+    if (musicGameOver) {
+        Mix_FreeMusic(musicGameOver);
+        musicGameOver = nullptr;
+    }
+
+
+    if (musicPlayground2) {
+        Mix_FreeMusic(musicPlayground2);
+        musicPlayground2 = nullptr;
+    }
+
+    if (bombsound) {
+        Mix_FreeChunk(bombsound);
+        bombsound = nullptr;
+    }
 }
 
+healthBar::healthBar(int max_hp, int w, int h, SDL_Renderer *renderer) {
+    this->max_health = max_hp;
+    this->width = w;
+    this->height = h;
+    this->renderer = renderer;
+}
+
+void healthBar::render(int x, int y,int width, int health, SDL_Renderer *renderer) {
+    renderProgressBar(x, y-15, width, 13, health, max_health, myRED, myGREY, renderer);
+}
 
