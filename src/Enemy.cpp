@@ -147,6 +147,18 @@ Monster::Monster(float posx, float posy, float speed, int Hp, SDL_Renderer* rend
     animS = new Animation('s', 50, this->Simages, renderer);
     animD = new Animation('D', 30, this->Dimages, renderer, BOMB_SOUND);
 }
+void Monster::kinetic(float dt) {
+    static int s = 60;
+    this->x += this->speed * dt;
+    this->y += s *dt;
+    if (this->y > WINDOW_HEIGHT) {
+        s = -s;
+        this->y = WINDOW_HEIGHT;
+    }else if (this->y < WINDOW_M_HEIGHT) {
+        s = -s;
+        this->y = WINDOW_M_HEIGHT;
+    }
+}
 
 
 Human::Human(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer):Enemy(posx, posy, speed, Hp, renderer) {

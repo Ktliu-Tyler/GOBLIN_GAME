@@ -18,9 +18,9 @@ public:
     void render(SDL_Renderer* renderer);
     void kinetic(float dt);
     void destroy();
-    void hurted(int att);
-    int ifdied();
-    int getAttack();
+    virtual void hurted(int att);
+    virtual int ifdied();
+    virtual int getAttack();
 protected:
     std::vector<std::string> Wimages = ENEMY1_IMAGES;
     std::vector<std::string> Simages = ENEMY1_DIE;
@@ -32,6 +32,7 @@ protected:
     float rectRATE = 0.6;
     char type = 'E';
     float x, y;
+    float speed=BDSPEED;
 private:
     SDL_Rect *rect;
     SDL_Rect *hitrect;
@@ -39,7 +40,6 @@ private:
     bool attacked = false;
     char state = 'W';
     int dieANIMcount = 0;
-    float speed=BDSPEED;
     int hpMAX = 10;
     int hp = 1;
     float width=100, height=100;
@@ -50,6 +50,7 @@ private:
 class Monster: public Enemy {
 public:
     Monster(float posx, float posy, float speed, int Hp, SDL_Renderer* renderer);
+    void kinetic(float dt);
 };
 
 class Human: public Enemy {

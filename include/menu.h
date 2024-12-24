@@ -14,18 +14,18 @@
 
 
 class menu {// Menu class
-    public:
+private:
     SDL_Texture *background = nullptr; // 背景
     SDL_Renderer *renderer = nullptr; // 渲染器
     GameRecorder *recorder = nullptr;
     MusicPlayer *musicPlayer = nullptr;
     Animation *anim = nullptr;
     std::vector<std::string> BGimages = MENU_ANIME;
+public:
     bool startMenu =false;
     int update(float deltatime);
     int process_input(SDL_Event *event);
     void render(SDL_Renderer *renderer);
-
     menu(std::string path, SDL_Renderer* renderer, GameRecorder *recorder, MusicPlayer *music_player);
     ~menu();
 };
